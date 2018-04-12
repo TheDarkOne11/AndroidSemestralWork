@@ -29,12 +29,12 @@ public class DataStorage {
          */
         int i = 0;
 
-        Article a0 = new Article(0, "Today",
-                "Johnny Depp by měl zbystřit. Zahrál si totiž roli ve filmu Transcendence, ve kterém si po smrti nahraje mysl do počítače. A o něco podobného se snaží mladá technologická firma Nectome.",
-                "Tomáš Hegedüš",
-                new GregorianCalendar(2018, 2, 21, 7, 0));
+        Article a0 = new Article(0, "Český herec s francouzským jménem le Breux hrál od mládí staříky",
+                "Jeho jméno rozhodně nevypadá tuzemsky, přesto se stal uznávaným českým hercem. Felix le Breux se narodil před 100 lety, 5. dubna 1918 v Plzni. Byl hlavně divadelním hercem. Po válce působil třeba v divadle ABC, až nakonec zakotvil v Městských divadlech pražských.",
+                "Vladimír Vokál",
+                new GregorianCalendar(2018, 3, 5, 7, 0));
         try {
-            a0.setUrl(new URL("https://technet.idnes.cz/nectome-cloud-obsah-mozku-mozek-synapse-smrt-michael-mccanna-robert-mcintyre-mit-kryoprezervace-imv-/kratke-zpravy.aspx?c=A180316_150816_tec-kratke-zpravy_hege"));
+            a0.setUrl(new URL("https://technet.idnes.cz/le-breux-herec-film-divadlo-pred-100-lety-dyf-/pred-100-lety.aspx?c=A180404_175801_pred-100-lety_vov"));
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }

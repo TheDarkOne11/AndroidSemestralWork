@@ -1,9 +1,7 @@
 <resources>
     <string name="app_name">feedreader</string>
     <string name="authorString">by %s</string>
-    <string name="articleLinkText">
-        <a href="https://technet.idnes.cz/nectome-cloud-obsah-mozku-mozek-synapse-smrt-michael-mccanna-robert-mcintyre-mit-kryoprezervace-imv-/kratke-zpravy.aspx?c=A180316_150816_tec-kratke-zpravy_hege">View full article</a>
-    </string>
+    <string name="view_full_article"><u>VIEW FULL ARTICLE</u></string>
 
     <!--
         All possible calendar strings.

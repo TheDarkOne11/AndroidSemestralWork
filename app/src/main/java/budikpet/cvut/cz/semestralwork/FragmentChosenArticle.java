@@ -1,7 +1,9 @@
 package budikpet.cvut.cz.semestralwork;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.Html;
@@ -58,15 +60,23 @@ public class FragmentChosenArticle extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chosen_article, container, false);
+        final Article article = DataStorage.getArticle(articleId);
         TextView heading = (TextView) view.findViewById(R.id.heading);
         TextView subheading = (TextView) view.findViewById(R.id.subheading);
         TextView mainText = (TextView) view.findViewById(R.id.mainText);
-        Article article = DataStorage.getArticle(articleId);
+        TextView link = (TextView) view.findViewById(R.id.fullArticleLink);
 
-        // Create article text
+        // Build article from components
         heading.setText(article.getHeading());
         subheading.setText(getTimeString(article));
         mainText.setText(article.getText());
+        link.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Clickable link to the website
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(article.getUrl().toString())));
+            }
+        });
 
         return view;
     }
@@ -107,14 +117,10 @@ public class FragmentChosenArticle extends Fragment {
             // Longer than 7 days
             calendarString = String.format(res.getString(R.string.calendar_moreThanWeek), articleDate);
         }
-
-        stringBuilder.append(calendarString)
-                .append(" ");
-
         String authorString = String.format(res.getString(R.string.authorString), article.getAuthor());
-        stringBuilder.append(authorString)
-                .append("\n")
-                .append(res.getString(R.string.articleLinkText));
+        stringBuilder.append(calendarString)
+                .append(" ")
+                .append(authorString);
 
         return stringBuilder.toString();
     }
