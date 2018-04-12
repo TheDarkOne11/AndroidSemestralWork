@@ -1,0 +1,29 @@
+<resources>
+    <string name="app_name">feedreader</string>
+    <string name="authorString">by %s</string>
+    <string name="articleLinkText">
+        <a href="https://technet.idnes.cz/nectome-cloud-obsah-mozku-mozek-synapse-smrt-michael-mccanna-robert-mcintyre-mit-kryoprezervace-imv-/kratke-zpravy.aspx?c=A180316_150816_tec-kratke-zpravy_hege">View full article</a>
+    </string>
+
+    <!--
+        All possible calendar strings.
+        Uses String.Format() for Date formatting.
+     -->
+    <string name="calendar_lessThanDay">%d hours ago</string>
+    <string name="calendar_yesterday">Yesterday</string>
+    <string name="calendar_lessThanWeek">%d days ago</string>
+    <string name="calendar_moreThanWeek">%1$tb %1$te, %1$tY</string>
+
+    <string name="shareSubject">Article to read: %s</string>
+    <string name="shareText">Check this article here: %s</string>
+    <string name="shareIntent">Share using</string>
+
+    <!-- ActivityNewsList menu -->
+    <string name="about">About</string>
+    <string name="preferences">Preferences</string>
+    <string name="itemConfigureFeeds">Configure feeds</string>
+    <string name="itemSync">Synchronize</string>
+
+    <!-- ActivityChosenArticle menu -->
+    <string name="itemShare">Share</string>
+</resources>
