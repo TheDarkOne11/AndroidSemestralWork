@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SemestralWork.iml" filepath="$PROJECT_DIR$/SemestralWork.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android-rome-feed-reader-1.0.0-r3.jar/android-rome-feed-reader-1.0.0-r3.jar.iml" filepath="$PROJECT_DIR$/android-rome-feed-reader-1.0.0-r3.jar/android-rome-feed-reader-1.0.0-r3.jar.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/jdom-1.1.1-android-fork.jar/jdom-1.1.1-android-fork.jar.iml" filepath="$PROJECT_DIR$/jdom-1.1.1-android-fork.jar/jdom-1.1.1-android-fork.jar.iml" />
     </modules>
   </component>
 </project>

@@ -8,7 +8,9 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/android-rome-feed-reader-1.0.0-r3.jar" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/jdom-1.1.1-android-fork.jar" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
