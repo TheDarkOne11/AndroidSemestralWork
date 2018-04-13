@@ -13,11 +13,10 @@ public class Article {
     private String heading;
     private String text;
     private String author;
-    private URL url;
+    private String url;
     private GregorianCalendar calendar;
 
     public Article(int id) {
-
         this.id = id;
     }
 
@@ -58,11 +57,11 @@ public class Article {
         this.author = author;
     }
 
-    public URL getUrl() {
+    public String getUrl() {
         return url;
     }
 
-    public void setUrl(URL url) {
+    public void setUrl(String url) {
         this.url = url;
     }
 

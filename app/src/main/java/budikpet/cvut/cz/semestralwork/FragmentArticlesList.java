@@ -17,6 +17,7 @@ import java.util.Map;
 
 import budikpet.cvut.cz.semestralwork.articles.Article;
 import budikpet.cvut.cz.semestralwork.articles.DataStorage;
+import budikpet.cvut.cz.semestralwork.feeds.FeedHandler;
 
 
 /**
@@ -29,6 +30,7 @@ import budikpet.cvut.cz.semestralwork.articles.DataStorage;
  */
 public class FragmentArticlesList extends Fragment {
     private OnFragmentInteractionListener mListener;
+    private FeedHandler feedHandler;
 
     public FragmentArticlesList() {
         // Required empty public constructor
@@ -56,6 +58,7 @@ public class FragmentArticlesList extends Fragment {
                              Bundle savedInstanceState) {
         View fragmentView = inflater.inflate(R.layout.fragment_articles_list, container, false);
         LinearLayout articlesContainer = fragmentView.findViewById(R.id.articlesContainer);
+        feedHandler = new FeedHandler();
 
         // Create new clickable TextViews for all articles
         final Hashtable<String, Article> articles = DataStorage.getArticles();
