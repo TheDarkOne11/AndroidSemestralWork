@@ -9,15 +9,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import budikpet.cvut.cz.semestralwork.articles.Article;
 import budikpet.cvut.cz.semestralwork.articles.DataStorage;
 
-public class ActivityNewsList extends AppCompatActivity implements FragmentArticlesList.OnFragmentInteractionListener {
+public class ActivityArticlesList extends AppCompatActivity implements FragmentArticlesList.OnFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_news_list);
+        setContentView(R.layout.activity_articles_list);
 
         if (savedInstanceState == null) {
             DataStorage.init();
