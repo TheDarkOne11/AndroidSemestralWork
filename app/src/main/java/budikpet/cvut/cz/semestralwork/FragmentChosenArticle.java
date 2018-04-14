@@ -71,7 +71,7 @@ public class FragmentChosenArticle extends Fragment {
             @Override
             public void onClick(View v) {
                 // Clickable link to the website
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(article.getUrl().toString())));
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(article.getUrl())));
             }
         });
 

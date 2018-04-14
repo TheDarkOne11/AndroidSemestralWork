@@ -8,8 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
-import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndFeed;
-
 public class ArticlesContentProvider extends ContentProvider {
 	private DBHelper dbHelper;
 

@@ -21,7 +21,7 @@ public class LoaderFragment extends Fragment {
     private LoaderAsyncTask task;
     private TaskCallbacks callbacks;
 
-    public static interface TaskCallbacks {
+    public interface TaskCallbacks {
         void onPreExecute();
 
         void onPostExecute(SyndFeed feed);
@@ -65,9 +65,7 @@ public class LoaderFragment extends Fragment {
                 SyndFeedInput input = new SyndFeedInput();
                 result = input.build(new XmlReader(
                         new URL(strings[0])));
-            } catch (FeedException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+            } catch (FeedException | IOException e) {
                 e.printStackTrace();
             }
 

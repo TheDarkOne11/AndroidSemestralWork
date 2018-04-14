@@ -22,7 +22,7 @@ import budikpet.cvut.cz.semestralwork.data.LoaderFragment;
 
 public class ActivityArticlesList extends AppCompatActivity
 		implements FragmentArticlesList.InteractionListener, LoaderFragment.TaskCallbacks {
-	LoaderFragment loaderFragment;
+	private LoaderFragment loaderFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

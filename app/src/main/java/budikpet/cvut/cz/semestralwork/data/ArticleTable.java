@@ -2,8 +2,6 @@ package budikpet.cvut.cz.semestralwork.data;
 
 import android.database.sqlite.SQLiteDatabase;
 
-import java.util.GregorianCalendar;
-
 /**
  * Created by Petr on 14.04.18.
  * Class used as a template for ArticleTable inside database
@@ -44,7 +42,7 @@ public class ArticleTable {
 		dropAndCreateTable(db);
 	}
 
-	public static void dropAndCreateTable(SQLiteDatabase db){
+	private static void dropAndCreateTable(SQLiteDatabase db){
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
 		onCreate(db);
 	}

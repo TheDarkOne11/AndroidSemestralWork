@@ -1,7 +1,5 @@
 package budikpet.cvut.cz.semestralwork.articles;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 

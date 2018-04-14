@@ -40,9 +40,7 @@ public class FragmentArticlesList extends Fragment {
      * @return A new instance of fragment FragmentArticlesList.
      */
     public static FragmentArticlesList newInstance() {
-        FragmentArticlesList fragment = new FragmentArticlesList();
-
-        return fragment;
+		return new FragmentArticlesList();
     }
 
     @Override
@@ -116,6 +114,6 @@ public class FragmentArticlesList extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface InteractionListener {
-        public void showChosenArticle(View v);
+        void showChosenArticle(View v);
     }
 }
