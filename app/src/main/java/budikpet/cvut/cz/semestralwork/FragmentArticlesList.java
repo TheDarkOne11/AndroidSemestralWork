@@ -1,21 +1,20 @@
 package budikpet.cvut.cz.semestralwork;
 
 import android.content.Context;
-import android.graphics.Typeface;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.ListView;
 
-import java.util.Hashtable;
-import java.util.Map;
-
-import budikpet.cvut.cz.semestralwork.articles.Article;
-import budikpet.cvut.cz.semestralwork.articles.DataStorage;
+import budikpet.cvut.cz.semestralwork.data.ArticleTable;
+import budikpet.cvut.cz.semestralwork.data.ArticlesContentProvider;
+import budikpet.cvut.cz.semestralwork.data.ArticlesCursorAdapter;
 
 
 /**
@@ -26,8 +25,12 @@ import budikpet.cvut.cz.semestralwork.articles.DataStorage;
  * Use the {@link FragmentArticlesList#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class FragmentArticlesList extends Fragment {
-    private InteractionListener mListener;
+public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cursor> {
+	private final int LOADER_ID = 1;
+    private InteractionListener listener;
+    private ListView listView;
+    private ArticlesCursorAdapter adapter;
+    private Context activityContext;
 
     public FragmentArticlesList() {
         // Required empty public constructor
@@ -47,42 +50,14 @@ public class FragmentArticlesList extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View fragmentView = inflater.inflate(R.layout.fragment_articles_list, container, false);
-        LinearLayout articlesContainer = fragmentView.findViewById(R.id.articlesContainer);
 
-        // Create new clickable TextViews for all articles
-        final Hashtable<String, Article> articles = DataStorage.getArticles();
-        for(Map.Entry<String, Article> entry : articles.entrySet()) {
-            // Heading
-            TextView heading = new TextView(getContext());
-            heading.setId(View.generateViewId());
-            heading.setTypeface(null, Typeface.BOLD);
-            heading.setText(entry.getValue().getHeading());
-            heading.setPadding(8, 4, 8, 4);
+        // Initialize listView and it's adapter
+		listView = fragmentView.findViewById(R.id.articlesListView);
+		adapter = new ArticlesCursorAdapter(activityContext, null, 0);
+		listView.setAdapter(adapter);
 
-            // Text
-            TextView text = new TextView(getContext());
-            text.setId(View.generateViewId());
-            text.setTextSize(12);
-            text.setText(entry.getValue().getText());
-            text.setEllipsize(TextUtils.TruncateAt.END);
-            text.setMaxLines(3);
-            text.setPadding(8, 4, 8, 4);
-
-            // Assemble and add article
-            LinearLayout currArticleView = new LinearLayout(getContext());
-            currArticleView.setTag(R.id.keyChosenArticleId, entry.getKey());
-            currArticleView.setOrientation(LinearLayout.VERTICAL);
-            currArticleView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mListener.showChosenArticle(v);
-                }
-            });
-            currArticleView.addView(heading);
-            currArticleView.addView(text);
-            articlesContainer.addView(currArticleView);
-        }
-
+		// Start cursor loader
+		getLoaderManager().initLoader(LOADER_ID, null, this);
         return fragmentView;
     }
 
@@ -90,7 +65,8 @@ public class FragmentArticlesList extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof InteractionListener) {
-            mListener = (InteractionListener) context;
+            listener = (InteractionListener) context;
+			activityContext = context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement InteractionListener");
@@ -100,10 +76,52 @@ public class FragmentArticlesList extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        listener = null;
+        activityContext = null;
     }
 
-    /**
+    @Override
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
+		switch (id) {
+			case LOADER_ID:
+				return new CursorLoader(getContext(), ArticlesContentProvider.ARTICLE_URI,
+						new String[] {ArticleTable.ID, ArticleTable.HEADING, ArticleTable.TEXT},
+						null, null, null);
+			default:
+				break;
+		}
+
+		return null;
+	}
+
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		switch (loader.getId()) {
+			case LOADER_ID:
+				adapter.swapCursor(cursor);
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	@Override
+	public void onLoaderReset(Loader<Cursor> loader) {
+		switch (loader.getId()) {
+			case LOADER_ID:
+				// Deactivate adapter cursor
+				adapter.swapCursor(null);
+				break;
+
+			default:
+				break;
+		}
+	}
+
+
+	/**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that

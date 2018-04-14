@@ -87,6 +87,8 @@ public class ActivityArticlesList extends AppCompatActivity
                 Log.i("MENU", "About clicked");
                 return true;
 			case R.id.itemSynchronize:
+				// Clear database
+				getContentResolver().delete(ArticlesContentProvider.ARTICLE_URI, null, null);
 				loaderFragment.execute("http://servis.idnes.cz/rss.aspx?c=technet");
 				loaderFragment.execute("http://servis.idnes.cz/rss.aspx?c=zpravodaj");
 				loaderFragment.execute("http://servis.idnes.cz/rss.aspx?c=hobby");
@@ -100,8 +102,7 @@ public class ActivityArticlesList extends AppCompatActivity
 
 	@Override
 	public void onPreExecute() {
-		// Clear database
-		getContentResolver().delete(ArticlesContentProvider.ARTICLE_URI, null, null);
+
 	}
 
 	/**

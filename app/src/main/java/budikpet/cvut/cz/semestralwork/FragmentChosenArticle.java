@@ -58,10 +58,10 @@ public class FragmentChosenArticle extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chosen_article, container, false);
         final Article article = DataStorage.getArticle(articleId);
-        TextView heading = (TextView) view.findViewById(R.id.heading);
-        TextView subheading = (TextView) view.findViewById(R.id.subheading);
-        TextView mainText = (TextView) view.findViewById(R.id.mainText);
-        TextView link = (TextView) view.findViewById(R.id.fullArticleLink);
+        TextView heading = view.findViewById(R.id.heading);
+        TextView subheading = view.findViewById(R.id.subheading);
+        TextView mainText = view.findViewById(R.id.mainText);
+        TextView link = view.findViewById(R.id.fullArticleLink);
 
         // Build article from components
         heading.setText(article.getHeading());
