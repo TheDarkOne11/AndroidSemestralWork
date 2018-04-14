@@ -1,6 +1,6 @@
-package budikpet.cvut.cz.semestralwork.feeds;
+package budikpet.cvut.cz.semestralwork.data;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -23,10 +23,6 @@ public class LoaderFragment extends Fragment {
 
     public static interface TaskCallbacks {
         void onPreExecute();
-
-        void onProgressUpdate(int percent);
-
-        void onCancelled();
 
         void onPostExecute(SyndFeed feed);
     }

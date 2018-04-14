@@ -1,6 +1,5 @@
 package budikpet.cvut.cz.semestralwork.articles;
 
-import java.net.URL;
 import java.util.GregorianCalendar;
 
 /**
@@ -14,18 +13,18 @@ public class Article {
     private String text;
     private String author;
     private String url;
-    private GregorianCalendar calendar;
+    private GregorianCalendar timeCreated;
 
     public Article(int id) {
         this.id = id;
     }
 
-    public Article(int id, String heading, String text, String author, GregorianCalendar calendar) {
+    public Article(int id, String heading, String text, String author, GregorianCalendar timeCreated) {
         this.id = id;
         this.heading = heading;
         this.text = text;
         this.author = author;
-        this.calendar = calendar;
+        this.timeCreated = timeCreated;
     }
 
     //<editor-fold desc="Getters/ Setters">
@@ -65,12 +64,12 @@ public class Article {
         this.url = url;
     }
 
-    public GregorianCalendar getCalendar() {
-        return calendar;
+    public GregorianCalendar getTimeCreated() {
+        return timeCreated;
     }
 
-    public void setCalendar(GregorianCalendar calendar) {
-        this.calendar = calendar;
+    public void setTimeCreated(GregorianCalendar timeCreated) {
+        this.timeCreated = timeCreated;
     }
     //</editor-fold>
 }
