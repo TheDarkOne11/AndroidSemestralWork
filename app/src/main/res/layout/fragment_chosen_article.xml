@@ -1,38 +1,44 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="8dp"
     tools:context="budikpet.cvut.cz.semestralwork.FragmentChosenArticle">
 
-    <TextView
-        android:id="@+id/heading"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Heading"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="8dp">
 
-    <TextView
-        android:id="@+id/subheading"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Subheading"
-        android:textStyle="italic" />
+        <TextView
+            android:id="@+id/heading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Heading"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/fullArticleLink"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/view_full_article"
-        android:textColor="@color/colorAccent" />
+        <TextView
+            android:id="@+id/subheading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Subheading"
+            android:textStyle="italic" />
 
-    <TextView
-        android:id="@+id/mainText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingTop="8dp"
-        android:text="Text" />
+        <TextView
+            android:id="@+id/fullArticleLink"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/view_full_article"
+            android:textColor="@color/colorAccent" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/mainText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="8dp"
+            android:text="Text" />
+
+    </LinearLayout>
+
+</ScrollView>

@@ -15,7 +15,6 @@ import android.view.View;
 import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndEntry;
 import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndFeed;
 
-import budikpet.cvut.cz.semestralwork.articles.DataStorage;
 import budikpet.cvut.cz.semestralwork.data.ArticleTable;
 import budikpet.cvut.cz.semestralwork.data.ArticlesContentProvider;
 import budikpet.cvut.cz.semestralwork.data.LoaderFragment;
@@ -33,7 +32,6 @@ public class ActivityArticlesList extends AppCompatActivity
             FragmentManager fm = getSupportFragmentManager();
 			String tag = "loaderFragment";
 
-            DataStorage.init();
 			FragmentTransaction transaction = fm.beginTransaction()
 					.add(R.id.newsListContainer, FragmentArticlesList.newInstance());
 
@@ -51,7 +49,7 @@ public class ActivityArticlesList extends AppCompatActivity
     @Override
     public void showChosenArticle(View v) {
         // Get stored article through ID that was stored in View
-        int articleId = Integer.parseInt((String) v.getTag(R.id.keyChosenArticleId));
+        int articleId = (int) v.getTag(R.id.keyChosenArticleId);
 
         Intent showArticle = new Intent(this, ActivityChosenArticle.class);
         showArticle.putExtra(R.id.keyChosenArticleId + "", articleId);
@@ -90,10 +88,10 @@ public class ActivityArticlesList extends AppCompatActivity
 				// Clear database
 				getContentResolver().delete(ArticlesContentProvider.ARTICLE_URI, null, null);
 				loaderFragment.execute("http://servis.idnes.cz/rss.aspx?c=technet");
-				loaderFragment.execute("http://servis.idnes.cz/rss.aspx?c=zpravodaj");
-				loaderFragment.execute("http://servis.idnes.cz/rss.aspx?c=hobby");
-				loaderFragment.execute("http://servis.idnes.cz/rss.aspx?c=autokat");
-				loaderFragment.execute("http://servis.idnes.cz/rss.aspx?c=bonusweb");
+//				loaderFragment.execute("http://servis.idnes.cz/rss.aspx?c=zpravodaj");
+//				loaderFragment.execute("http://servis.idnes.cz/rss.aspx?c=hobby");
+//				loaderFragment.execute("http://servis.idnes.cz/rss.aspx?c=autokat");
+//				loaderFragment.execute("http://servis.idnes.cz/rss.aspx?c=bonusweb");
 				return true;
         }
 

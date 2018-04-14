@@ -7,6 +7,7 @@
         All possible calendar strings.
         Uses String.Format() for Date formatting.
      -->
+    <string name="calendar_lessThanHour">%d minutes ago</string>
     <string name="calendar_lessThanDay">%d hours ago</string>
     <string name="calendar_yesterday">Yesterday</string>
     <string name="calendar_lessThanWeek">%d days ago</string>

@@ -34,7 +34,7 @@ public class ArticlesContentProvider extends ContentProvider {
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
 		int uriType = sURIMatcher.match(uri);
 		SQLiteDatabase sqlDB = dbHelper.getWritableDatabase();
-		int rowsDeleted = 0;
+		int rowsDeleted;
 		switch (uriType) {
 			case ARTICLE_LIST:
 				rowsDeleted = sqlDB.delete(ArticleTable.TABLE_NAME, selection, selectionArgs);
@@ -55,7 +55,7 @@ public class ArticlesContentProvider extends ContentProvider {
 	public Uri insert(Uri uri, ContentValues values) {
 		int uriType = sURIMatcher.match(uri);
 		SQLiteDatabase sqlDB = dbHelper.getWritableDatabase();
-		long id = 0;
+		long id;
 		switch (uriType) {
 			case ARTICLE_LIST:
 				id = sqlDB.insert(ArticleTable.TABLE_NAME, null, values);

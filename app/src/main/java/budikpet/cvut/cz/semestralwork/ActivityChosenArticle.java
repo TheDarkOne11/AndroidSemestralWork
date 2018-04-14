@@ -7,10 +7,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import budikpet.cvut.cz.semestralwork.articles.Article;
-import budikpet.cvut.cz.semestralwork.articles.DataStorage;
-
-public class ActivityChosenArticle extends AppCompatActivity implements FragmentChosenArticle.OnFragmentInteractionListener {
+public class ActivityChosenArticle extends AppCompatActivity implements FragmentChosenArticle.InteractionListener {
     private int articleId;
 
     @Override
@@ -68,10 +65,11 @@ public class ActivityChosenArticle extends AppCompatActivity implements Fragment
      */
     private void share() {
         Intent ShareIntent = new Intent(Intent.ACTION_SEND);
-        Article article = DataStorage.getArticle(articleId);
-        ShareIntent.setType("text/plain");
-        ShareIntent.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.shareSubject), article.getHeading()));
-        ShareIntent.putExtra(Intent.EXTRA_TEXT, String.format(getString(R.string.shareText), article.getUrl()));
-        startActivity(Intent.createChooser(ShareIntent, getString(R.string.shareIntent)));
+
+        // TODO Sharing
+//        ShareIntent.setType("text/plain");
+//        ShareIntent.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.shareSubject), article.getHeading()));
+//        ShareIntent.putExtra(Intent.EXTRA_TEXT, String.format(getString(R.string.shareText), article.getUrl()));
+//        startActivity(Intent.createChooser(ShareIntent, getString(R.string.shareIntent)));
     }
 }

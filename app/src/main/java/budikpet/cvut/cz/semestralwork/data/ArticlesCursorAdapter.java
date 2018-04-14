@@ -2,8 +2,6 @@ package budikpet.cvut.cz.semestralwork.data;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.net.Uri;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,8 +32,7 @@ public class ArticlesCursorAdapter extends CursorAdapter {
 	 */
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
-		View view = mInflater.inflate(R.layout.row_article, parent, false);
-		return view;
+		return mInflater.inflate(R.layout.row_article, parent, false);
 	}
 
 	/**
@@ -51,5 +48,7 @@ public class ArticlesCursorAdapter extends CursorAdapter {
 
 		TextView text = view.findViewById(R.id.rowText);
 		text.setText(cursor.getString(cursor.getColumnIndex(ArticleTable.TEXT)));
+
+		view.setTag(R.id.keyChosenArticleId, cursor.getInt(cursor.getColumnIndex(ArticleTable.ID)));
 	}
 }
