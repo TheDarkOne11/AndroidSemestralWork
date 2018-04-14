@@ -76,6 +76,7 @@ public class LoaderFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            callbacks.onPreExecute();
         }
 
         @Override

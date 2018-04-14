@@ -100,7 +100,8 @@ public class ActivityArticlesList extends AppCompatActivity
 
 	@Override
 	public void onPreExecute() {
-
+		// Clear database
+		getContentResolver().delete(ArticlesContentProvider.ARTICLE_URI, null, null);
 	}
 
 	/**
