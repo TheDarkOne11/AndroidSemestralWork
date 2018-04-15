@@ -32,23 +32,19 @@ public class ActivityArticlesList extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_articles_list);
+		FragmentManager fm = getSupportFragmentManager();
 
         if (savedInstanceState == null) {
-            FragmentManager fm = getSupportFragmentManager();
-			String tag = "loaderFragment";
-
-			FragmentTransaction transaction = fm.beginTransaction()
-					.add(R.id.newsListContainer, FragmentArticlesList.newInstance());
-
-			// Add loader fragment if it doesn't exist
-			loaderFragment = (LoaderFragment) fm.findFragmentByTag(tag);
-			if (loaderFragment == null) {
-				loaderFragment = new LoaderFragment();
-				transaction.add(loaderFragment, tag);
-			}
-
-			transaction.commit();
+			fm.beginTransaction().add(R.id.newsListContainer, FragmentArticlesList.newInstance()).commit();
         }
+
+		// Add loader fragment if it doesn't exist
+		String tag = "loaderFragment";
+		loaderFragment = (LoaderFragment) fm.findFragmentByTag(tag);
+		if (loaderFragment == null) {
+			loaderFragment = new LoaderFragment();
+			fm.beginTransaction().add(loaderFragment, tag).commit();
+		}
     }
 
     @Override
@@ -103,7 +99,6 @@ public class ActivityArticlesList extends AppCompatActivity
 
 	@Override
 	public void onPreExecute() {
-
 	}
 
 	/**

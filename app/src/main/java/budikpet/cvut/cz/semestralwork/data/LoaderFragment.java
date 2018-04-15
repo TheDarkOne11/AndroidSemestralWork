@@ -1,5 +1,6 @@
 package budikpet.cvut.cz.semestralwork.data;
 
+import android.os.SystemClock;
 import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.os.AsyncTask;
