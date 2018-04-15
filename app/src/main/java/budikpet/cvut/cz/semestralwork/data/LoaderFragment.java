@@ -13,6 +13,7 @@ import com.google.code.rome.android.repackaged.com.sun.syndication.io.XmlReader;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 
 /**
  * Retain fragment used for downloading feeds.
@@ -24,14 +25,18 @@ public class LoaderFragment extends Fragment {
     public interface TaskCallbacks {
         void onPreExecute();
 
-        void onPostExecute(SyndFeed feed);
+		/**
+		 * Processes all downloaded feeds.
+		 * @param feeds
+		 */
+		void onPostExecute(ArrayList<SyndFeed> feeds);
     }
 
     /**
      * Starts getting information about the feed.
      * @param url
      */
-    public void execute(String url) {
+    public void execute(String... url) {
         task = new LoaderAsyncTask();
         task.execute(url);
     }
@@ -56,15 +61,18 @@ public class LoaderFragment extends Fragment {
         this.setRetainInstance(true);
     }
 
-    private class LoaderAsyncTask extends AsyncTask<String, Integer, SyndFeed> {
+    private class LoaderAsyncTask extends AsyncTask<String, Integer, ArrayList<SyndFeed>> {
 
         @Override
-        protected SyndFeed doInBackground(String... strings) {
-            SyndFeed result = null;
+        protected ArrayList<SyndFeed> doInBackground(String... urls) {
+			ArrayList<SyndFeed> result = new ArrayList<>();
             try {
                 SyndFeedInput input = new SyndFeedInput();
-                result = input.build(new XmlReader(
-                        new URL(strings[0])));
+
+                for(String url : urls) {
+					result.add(input.build(new XmlReader(new URL(url))));
+				}
+
             } catch (FeedException | IOException e) {
                 e.printStackTrace();
             }
@@ -80,7 +88,7 @@ public class LoaderFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(SyndFeed syndFeed) {
+        protected void onPostExecute(ArrayList<SyndFeed> syndFeed) {
             super.onPostExecute(syndFeed);
             callbacks.onPostExecute(syndFeed);
         }

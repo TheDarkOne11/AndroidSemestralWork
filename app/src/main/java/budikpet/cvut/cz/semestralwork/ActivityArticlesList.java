@@ -15,6 +15,11 @@ import android.view.View;
 import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndEntry;
 import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndFeed;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import budikpet.cvut.cz.semestralwork.data.ArticleTable;
 import budikpet.cvut.cz.semestralwork.data.ArticlesContentProvider;
 import budikpet.cvut.cz.semestralwork.data.LoaderFragment;
@@ -85,10 +90,8 @@ public class ActivityArticlesList extends AppCompatActivity
                 Log.i("MENU", "About clicked");
                 return true;
 			case R.id.itemSynchronize:
-				// Clear database
-				getContentResolver().delete(ArticlesContentProvider.ARTICLE_URI, null, null);
-				loaderFragment.execute("http://servis.idnes.cz/rss.aspx?c=technet");
-//				loaderFragment.execute("http://servis.idnes.cz/rss.aspx?c=zpravodaj");
+				loaderFragment.execute("http://servis.idnes.cz/rss.aspx?c=technet",
+						"http://servis.idnes.cz/rss.aspx?c=zpravodaj");
 //				loaderFragment.execute("http://servis.idnes.cz/rss.aspx?c=hobby");
 //				loaderFragment.execute("http://servis.idnes.cz/rss.aspx?c=autokat");
 //				loaderFragment.execute("http://servis.idnes.cz/rss.aspx?c=bonusweb");
@@ -105,12 +108,31 @@ public class ActivityArticlesList extends AppCompatActivity
 
 	/**
 	 * Gets new loaded feed data, stores it in database.
-	 * @param feed
+	 * @param feeds
 	 */
 	@Override
-	public void onPostExecute(SyndFeed feed) {
+	public void onPostExecute(ArrayList<SyndFeed> feeds) {
+		// Extract all entries
+		ArrayList<SyndEntry> entries = new ArrayList<>();
+		for(SyndFeed currFeed : feeds) {
+			List<SyndEntry> currEntries = currFeed.getEntries();
+			entries.addAll(currEntries);
+		}
+
+		// Sort entries by date
+		Collections.sort(entries, new Comparator<SyndEntry>() {
+			@Override
+			public int compare(SyndEntry o1, SyndEntry o2) {
+				return (int) (o2.getPublishedDate().getTime() - o1.getPublishedDate().getTime());
+			}
+		});
+
+		// Clear database
+		getContentResolver().delete(ArticlesContentProvider.ARTICLE_URI, null, null);
+
+		// Store entries in the database.
 		ContentValues cv = new ContentValues();
-		for(Object curr : feed.getEntries()) {
+		for(Object curr : entries) {
 			SyndEntry entry = (SyndEntry) curr;
 
 			// Set content values

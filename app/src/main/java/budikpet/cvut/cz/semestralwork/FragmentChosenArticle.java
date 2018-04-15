@@ -6,6 +6,7 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,10 +49,7 @@ public class FragmentChosenArticle extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        if (savedInstanceState == null) {
-            articleId = getArguments().getInt(R.id.keyChosenArticleId + "");
-        }
+        articleId = getArguments().getInt(R.id.keyChosenArticleId + "");
     }
 
     @Override
@@ -62,32 +60,39 @@ public class FragmentChosenArticle extends Fragment {
 		String[] columns = new String[] {ArticleTable.ID, ArticleTable.HEADING,
 				ArticleTable.TEXT, ArticleTable.TIME_CREATED, ArticleTable.AUTHOR, ArticleTable.URL};
 
-        Cursor cursor = activityContext.getContentResolver()
+        try(Cursor cursor = activityContext.getContentResolver()
 				.query(ArticlesContentProvider.ARTICLE_URI,
-						columns, ArticleTable.ID + "=\'" + articleId + "\'", null, null);
-        cursor.moveToFirst();
+						columns, ArticleTable.ID + "=\'" + articleId + "\'", null, null)) {
 
-		TextView heading = view.findViewById(R.id.heading);
-		TextView subheading = view.findViewById(R.id.subheading);
-		TextView mainText = view.findViewById(R.id.mainText);
-		TextView link = view.findViewById(R.id.fullArticleLink);
-
-		long timeCreated = cursor.getLong(cursor.getColumnIndex(ArticleTable.TIME_CREATED));
-		String author = cursor.getString(cursor.getColumnIndex(ArticleTable.AUTHOR));
-		final String url = cursor.getString(cursor.getColumnIndex(ArticleTable.URL));
-
-		// Build article from components
-		heading.setText(cursor.getString(cursor.getColumnIndex(ArticleTable.HEADING)));
-		subheading.setText(getSubheading(activityContext, timeCreated, author));
-		mainText.setText(cursor.getString(cursor.getColumnIndex(ArticleTable.TEXT)));
-		link.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+        	if(cursor == null || !cursor.moveToFirst()) {
+        		Log.i("ARTICLE_ID", articleId + "");
+				throw new IndexOutOfBoundsException("Problem with cursor");
 			}
-		});
 
-		cursor.close();
+			TextView heading = view.findViewById(R.id.heading);
+			TextView subheading = view.findViewById(R.id.subheading);
+			TextView mainText = view.findViewById(R.id.mainText);
+			TextView link = view.findViewById(R.id.fullArticleLink);
+
+			long timeCreated = cursor.getLong(cursor.getColumnIndex(ArticleTable.TIME_CREATED));
+			String author = cursor.getString(cursor.getColumnIndex(ArticleTable.AUTHOR));
+			final String url = cursor.getString(cursor.getColumnIndex(ArticleTable.URL));
+
+			// Build article from components
+			heading.setText(cursor.getString(cursor.getColumnIndex(ArticleTable.HEADING)));
+			subheading.setText(getSubheading(activityContext, timeCreated, author));
+			mainText.setText(cursor.getString(cursor.getColumnIndex(ArticleTable.TEXT)));
+			link.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+				}
+			});
+		} catch (IndexOutOfBoundsException e) {
+			Log.e("CURSOR_ERROR", e.getMessage());
+        	e.printStackTrace();
+		}
+
         return view;
     }
 

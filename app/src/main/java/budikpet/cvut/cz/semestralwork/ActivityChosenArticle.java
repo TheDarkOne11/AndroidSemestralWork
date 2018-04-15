@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -27,9 +28,9 @@ public class ActivityChosenArticle extends AppCompatActivity implements Fragment
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.articleContainer, FragmentChosenArticle.newInstance(articleId))
                     .commit();
-
-
-        }
+        } else {
+        	articleId = savedInstanceState.getInt(R.id.keyChosenArticleId + "");
+		}
     }
 
     @Override
@@ -69,19 +70,28 @@ public class ActivityChosenArticle extends AppCompatActivity implements Fragment
      */
     private void share() {
         Intent ShareIntent = new Intent(Intent.ACTION_SEND);
-		Cursor cursor = getContentResolver()
+		try(Cursor cursor = getContentResolver()
 				.query(ArticlesContentProvider.ARTICLE_URI,
 						new String[] {ArticleTable.ID, ArticleTable.URL, ArticleTable.HEADING},
-						ArticleTable.ID + "=\'" + articleId + "\'", null, null);
-		cursor.moveToFirst();
+						ArticleTable.ID + "=\'" + articleId + "\'", null, null)) {
 
-        ShareIntent.setType("text/plain");
-        ShareIntent.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.shareSubject),
-				cursor.getString(cursor.getColumnIndex(ArticleTable.HEADING))));
-        ShareIntent.putExtra(Intent.EXTRA_TEXT, String.format(getString(R.string.shareText),
-				cursor.getString(cursor.getColumnIndex(ArticleTable.URL))));
+			if(cursor == null || !cursor.moveToFirst()) {
+				throw new IndexOutOfBoundsException("Problem with cursor: " + articleId);
+			}
 
-        cursor.close();
+			// Setup intent
+			ShareIntent.setType("text/plain");
+			ShareIntent.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.shareSubject),
+					cursor.getString(cursor.getColumnIndex(ArticleTable.HEADING))));
+			ShareIntent.putExtra(Intent.EXTRA_TEXT, String.format(getString(R.string.shareText),
+					cursor.getString(cursor.getColumnIndex(ArticleTable.URL))));
+		} catch (IndexOutOfBoundsException e) {
+			Log.e("CURSOR_ERROR", e.getMessage());
+			e.printStackTrace();
+			return;
+		}
+
         startActivity(Intent.createChooser(ShareIntent, getString(R.string.shareIntent)));
+
     }
 }

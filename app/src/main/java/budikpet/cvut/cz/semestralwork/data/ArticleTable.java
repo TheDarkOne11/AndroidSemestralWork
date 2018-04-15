@@ -23,10 +23,10 @@ public class ArticleTable {
 			+ "("
 			+ ID + " integer primary key autoincrement, "
 			+ HEADING + " text not null, "
-			+ TEXT + " text null, "
-			+ AUTHOR + " text null, "
+			+ TEXT + " text, "
+			+ AUTHOR + " text, "
 			+ URL + " text not null, "
-			+ TIME_CREATED + " integer null "
+			+ TIME_CREATED + " integer "
 			+ ");";
 
 	public static void onCreate(SQLiteDatabase db) {
