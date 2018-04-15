@@ -1,11 +1,15 @@
 package budikpet.cvut.cz.semestralwork;
 
 import android.content.Intent;
+import android.database.Cursor;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import budikpet.cvut.cz.semestralwork.data.ArticleTable;
+import budikpet.cvut.cz.semestralwork.data.ArticlesContentProvider;
 
 public class ActivityChosenArticle extends AppCompatActivity implements FragmentChosenArticle.InteractionListener {
     private int articleId;
@@ -65,11 +69,19 @@ public class ActivityChosenArticle extends AppCompatActivity implements Fragment
      */
     private void share() {
         Intent ShareIntent = new Intent(Intent.ACTION_SEND);
+		Cursor cursor = getContentResolver()
+				.query(ArticlesContentProvider.ARTICLE_URI,
+						new String[] {ArticleTable.ID, ArticleTable.URL, ArticleTable.HEADING},
+						ArticleTable.ID + "=\'" + articleId + "\'", null, null);
+		cursor.moveToFirst();
 
-        // TODO Sharing
-//        ShareIntent.setType("text/plain");
-//        ShareIntent.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.shareSubject), article.getHeading()));
-//        ShareIntent.putExtra(Intent.EXTRA_TEXT, String.format(getString(R.string.shareText), article.getUrl()));
-//        startActivity(Intent.createChooser(ShareIntent, getString(R.string.shareIntent)));
+        ShareIntent.setType("text/plain");
+        ShareIntent.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.shareSubject),
+				cursor.getString(cursor.getColumnIndex(ArticleTable.HEADING))));
+        ShareIntent.putExtra(Intent.EXTRA_TEXT, String.format(getString(R.string.shareText),
+				cursor.getString(cursor.getColumnIndex(ArticleTable.URL))));
+
+        cursor.close();
+        startActivity(Intent.createChooser(ShareIntent, getString(R.string.shareIntent)));
     }
 }
