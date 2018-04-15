@@ -3,13 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:onClick="showChosenArticle"
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/rowHeading"
+        android:id="@+id/feedHeading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:paddingBottom="4dp"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
@@ -19,16 +19,17 @@
         tools:ignore="HardcodedText" />
 
     <TextView
-        android:id="@+id/rowText"
+        android:id="@+id/feedUrl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:ellipsize="end"
         android:maxLines="3"
         android:paddingBottom="4dp"
         android:paddingLeft="8dp"
         android:paddingRight="8dp"
         android:paddingTop="4dp"
-        android:text="Text"
-        android:textSize="12sp"
-        tools:ignore="HardcodedText" />
+        android:text="URL"
+        android:textSize="12sp" />
+
 </LinearLayout>

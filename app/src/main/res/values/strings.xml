@@ -25,4 +25,5 @@
 
     <!-- ActivityChosenArticle menu -->
     <string name="itemShare">Share</string>
+    <string name="itemAddFeed">Add feed</string>
 </resources>

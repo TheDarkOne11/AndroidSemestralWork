@@ -12,9 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import budikpet.cvut.cz.semestralwork.data.ArticleTable;
-import budikpet.cvut.cz.semestralwork.data.ArticlesContentProvider;
-import budikpet.cvut.cz.semestralwork.data.ArticlesCursorAdapter;
+import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
+import budikpet.cvut.cz.semestralwork.data.FeedReaderContentProvider;
+import budikpet.cvut.cz.semestralwork.data.articles.ArticlesCursorAdapter;
 
 
 /**
@@ -85,7 +85,7 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 
 		switch (id) {
 			case LOADER_ID:
-				return new CursorLoader(getContext(), ArticlesContentProvider.ARTICLE_URI,
+				return new CursorLoader(getContext(), FeedReaderContentProvider.ARTICLE_URI,
 						new String[] {ArticleTable.ID, ArticleTable.HEADING, ArticleTable.TEXT},
 						null, null, null);
 			default:

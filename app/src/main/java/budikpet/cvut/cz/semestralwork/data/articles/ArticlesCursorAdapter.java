@@ -1,4 +1,4 @@
-package budikpet.cvut.cz.semestralwork.data;
+package budikpet.cvut.cz.semestralwork.data.articles;
 
 import android.content.Context;
 import android.database.Cursor;

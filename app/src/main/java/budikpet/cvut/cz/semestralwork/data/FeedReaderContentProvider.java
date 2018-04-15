@@ -8,26 +8,37 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
-public class ArticlesContentProvider extends ContentProvider {
+import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
+import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
+
+public class FeedReaderContentProvider extends ContentProvider {
 	private DBHelper dbHelper;
 
 	private static final String AUTHORITY = "budikpet.cvut.cz.semestralWork";
-	private static final String BASE_PATH = "articles";
 
 	// All defined URIs provided outside
-	public static final Uri ARTICLE_URI = Uri.parse("content://" + AUTHORITY + "/" + BASE_PATH);
+	public static final Uri ARTICLE_URI = Uri.parse("content://" + AUTHORITY + "/" + ArticleTable.BASE_PATH);
+	public static final Uri FEED_URI = Uri.parse("content://" + AUTHORITY + "/" + FeedTable.BASE_PATH);
 
 	// URI return codes
-	/** All articles. */
+	/**
+	 * All articles.
+	 */
 	private static final int ARTICLE_LIST = 1;
+	/**
+	 * All feeds.
+	 */
+	private static final int FEED_LIST = 2;
 
 
 	private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+
 	static {
-		sURIMatcher.addURI(AUTHORITY, BASE_PATH, ARTICLE_LIST);
+		sURIMatcher.addURI(AUTHORITY, ArticleTable.BASE_PATH, ARTICLE_LIST);
+		sURIMatcher.addURI(AUTHORITY, FeedTable.BASE_PATH, FEED_LIST);
 	}
 
-	public ArticlesContentProvider() {
+	public FeedReaderContentProvider() {
 	}
 
 	@Override
@@ -38,6 +49,9 @@ public class ArticlesContentProvider extends ContentProvider {
 		switch (uriType) {
 			case ARTICLE_LIST:
 				rowsDeleted = sqlDB.delete(ArticleTable.TABLE_NAME, selection, selectionArgs);
+				break;
+			case FEED_LIST:
+				rowsDeleted = sqlDB.delete(FeedTable.TABLE_NAME, selection, selectionArgs);
 				break;
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);
@@ -59,6 +73,9 @@ public class ArticlesContentProvider extends ContentProvider {
 		switch (uriType) {
 			case ARTICLE_LIST:
 				id = sqlDB.insert(ArticleTable.TABLE_NAME, null, values);
+				break;
+			case FEED_LIST:
+				id = sqlDB.insert(FeedTable.TABLE_NAME, null, values);
 				break;
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);
@@ -86,6 +103,9 @@ public class ArticlesContentProvider extends ContentProvider {
 		switch (uriType) {
 			case ARTICLE_LIST:
 				queryBuilder.setTables(ArticleTable.TABLE_NAME);
+				break;
+			case FEED_LIST:
+				queryBuilder.setTables(FeedTable.TABLE_NAME);
 				break;
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);

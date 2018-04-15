@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -20,13 +19,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import budikpet.cvut.cz.semestralwork.data.ArticleTable;
-import budikpet.cvut.cz.semestralwork.data.ArticlesContentProvider;
-import budikpet.cvut.cz.semestralwork.data.LoaderFragment;
+import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
+import budikpet.cvut.cz.semestralwork.data.FeedReaderContentProvider;
+import budikpet.cvut.cz.semestralwork.data.FeedDataLoader;
 
 public class ActivityArticlesList extends AppCompatActivity
-		implements FragmentArticlesList.InteractionListener, LoaderFragment.TaskCallbacks {
-	private LoaderFragment loaderFragment;
+		implements FragmentArticlesList.InteractionListener, FeedDataLoader.TaskCallbacks {
+	private FeedDataLoader feedDataLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,11 +38,11 @@ public class ActivityArticlesList extends AppCompatActivity
         }
 
 		// Add loader fragment if it doesn't exist
-		String tag = "loaderFragment";
-		loaderFragment = (LoaderFragment) fm.findFragmentByTag(tag);
-		if (loaderFragment == null) {
-			loaderFragment = new LoaderFragment();
-			fm.beginTransaction().add(loaderFragment, tag).commit();
+		String tag = "feedDataLoader";
+		feedDataLoader = (FeedDataLoader) fm.findFragmentByTag(tag);
+		if (feedDataLoader == null) {
+			feedDataLoader = new FeedDataLoader();
+			fm.beginTransaction().add(feedDataLoader, tag).commit();
 		}
     }
 
@@ -57,6 +56,10 @@ public class ActivityArticlesList extends AppCompatActivity
 
         startActivity(showArticle);
     }
+
+    public void goToConfigureFeeds() {
+
+	}
 
     /**
      * Creates new menu with share button.
@@ -74,8 +77,10 @@ public class ActivityArticlesList extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case (R.id.itemConfigureFeeds) :
-                // TODO Create functionality
-                Log.i("MENU", "ConfigureFeeds clicked");
+				Log.i("MENU", "ConfigureFeeds clicked");
+				// Go to activityConfigureFeeds
+				Intent configureFeeds = new Intent(this, ActivityConfigureFeeds.class);
+				startActivity(configureFeeds);
                 return true;
             case R.id.itemPreferences:
                 // TODO Create functionality
@@ -86,11 +91,11 @@ public class ActivityArticlesList extends AppCompatActivity
                 Log.i("MENU", "About clicked");
                 return true;
 			case R.id.itemSynchronize:
-				loaderFragment.execute("http://servis.idnes.cz/rss.aspx?c=technet",
+				feedDataLoader.execute("http://servis.idnes.cz/rss.aspx?c=technet",
 						"http://servis.idnes.cz/rss.aspx?c=zpravodaj");
-//				loaderFragment.execute("http://servis.idnes.cz/rss.aspx?c=hobby");
-//				loaderFragment.execute("http://servis.idnes.cz/rss.aspx?c=autokat");
-//				loaderFragment.execute("http://servis.idnes.cz/rss.aspx?c=bonusweb");
+//				feedDataLoader.execute("http://servis.idnes.cz/rss.aspx?c=hobby");
+//				feedDataLoader.execute("http://servis.idnes.cz/rss.aspx?c=autokat");
+//				feedDataLoader.execute("http://servis.idnes.cz/rss.aspx?c=bonusweb");
 				return true;
         }
 
@@ -123,7 +128,7 @@ public class ActivityArticlesList extends AppCompatActivity
 		});
 
 		// Clear database
-		getContentResolver().delete(ArticlesContentProvider.ARTICLE_URI, null, null);
+		getContentResolver().delete(FeedReaderContentProvider.ARTICLE_URI, null, null);
 
 		// Store entries in the database.
 		ContentValues cv = new ContentValues();
@@ -143,7 +148,7 @@ public class ActivityArticlesList extends AppCompatActivity
 			cv.put(ArticleTable.AUTHOR, author);
 
 			// Save it to database
-			getContentResolver().insert(ArticlesContentProvider.ARTICLE_URI, cv);
+			getContentResolver().insert(FeedReaderContentProvider.ARTICLE_URI, cv);
 		}
 	}
 }

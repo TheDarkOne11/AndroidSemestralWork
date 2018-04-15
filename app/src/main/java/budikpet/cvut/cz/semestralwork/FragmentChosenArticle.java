@@ -16,8 +16,8 @@ import android.support.v4.app.Fragment;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-import budikpet.cvut.cz.semestralwork.data.ArticleTable;
-import budikpet.cvut.cz.semestralwork.data.ArticlesContentProvider;
+import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
+import budikpet.cvut.cz.semestralwork.data.FeedReaderContentProvider;
 
 
 /**
@@ -61,7 +61,7 @@ public class FragmentChosenArticle extends Fragment {
 				ArticleTable.TEXT, ArticleTable.TIME_CREATED, ArticleTable.AUTHOR, ArticleTable.URL};
 
         try(Cursor cursor = activityContext.getContentResolver()
-				.query(ArticlesContentProvider.ARTICLE_URI,
+				.query(FeedReaderContentProvider.ARTICLE_URI,
 						columns, ArticleTable.ID + "=\'" + articleId + "\'", null, null)) {
 
         	if(cursor == null || !cursor.moveToFirst()) {

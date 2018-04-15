@@ -9,8 +9,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import budikpet.cvut.cz.semestralwork.data.ArticleTable;
-import budikpet.cvut.cz.semestralwork.data.ArticlesContentProvider;
+import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
+import budikpet.cvut.cz.semestralwork.data.FeedReaderContentProvider;
 
 public class ActivityChosenArticle extends AppCompatActivity implements FragmentChosenArticle.InteractionListener {
     private int articleId;
@@ -71,7 +71,7 @@ public class ActivityChosenArticle extends AppCompatActivity implements Fragment
     private void share() {
         Intent ShareIntent = new Intent(Intent.ACTION_SEND);
 		try(Cursor cursor = getContentResolver()
-				.query(ArticlesContentProvider.ARTICLE_URI,
+				.query(FeedReaderContentProvider.ARTICLE_URI,
 						new String[] {ArticleTable.ID, ArticleTable.URL, ArticleTable.HEADING},
 						ArticleTable.ID + "=\'" + articleId + "\'", null, null)) {
 

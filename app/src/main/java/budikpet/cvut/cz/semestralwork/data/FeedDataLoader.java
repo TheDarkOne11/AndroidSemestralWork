@@ -19,7 +19,7 @@ import java.util.ArrayList;
 /**
  * Retain fragment used for downloading feeds.
  */
-public class LoaderFragment extends Fragment {
+public class FeedDataLoader extends Fragment {
     private LoaderAsyncTask task;
     private TaskCallbacks callbacks;
 

@@ -1,4 +1,4 @@
-package budikpet.cvut.cz.semestralwork.data;
+package budikpet.cvut.cz.semestralwork.data.articles;
 
 import android.database.sqlite.SQLiteDatabase;
 
@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
  */
 public class ArticleTable {
 	public static final String TABLE_NAME = "ArticleTable";
+	public static final String BASE_PATH = "articles";
 
 	// Table names
 	public static final String ID = "_id";
