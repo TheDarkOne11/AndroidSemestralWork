@@ -1,14 +1,17 @@
 package budikpet.cvut.cz.semestralwork;
 
 import android.content.ContentValues;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -180,11 +183,31 @@ public class ActivityConfigureFeeds extends AppCompatActivity
 	}
 
 	public void removeFeed(View view) {
-		int feedId = (int) view.getTag(R.id.keyFeedId);
+		// Starts new dialog
+		final int feedId = (int) view.getTag(R.id.keyFeedId);
 
-		// Remove feed
-		getContentResolver().delete(FeedReaderContentProvider.FEED_URI,
-				FeedTable.ID + "=" + feedId, null);
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		View dialogRemoveView = getLayoutInflater().inflate(R.layout.dialog_remove_feed, null);
+
+		// Build the alert dialog
+		builder.setView(dialogRemoveView)
+				.setPositiveButton(R.string.removeDialogDelete, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// Remove feed
+						getContentResolver().delete(FeedReaderContentProvider.FEED_URI,
+								FeedTable.ID + "=" + feedId, null);
+					}
+				})
+				.setNegativeButton(R.string.dialogButtonCancel, new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+
+					}
+				});
+
+		AlertDialog dialog = builder.create();
+		dialog.show();
 	}
 
 	public void addFeed() {

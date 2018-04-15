@@ -39,13 +39,13 @@ public class DialogAddFeed extends AppCompatDialogFragment {
 		final EditText urlEditText = view.findViewById(R.id.addFeedUrl);
 
 		builder.setView(view)
-				.setPositiveButton("Add", new DialogInterface.OnClickListener() {
+				.setPositiveButton(R.string.dialogAddFeed, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						listener.saveFeed(urlEditText.getText().toString());
 					}
 				})
-				.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+				.setNegativeButton(R.string.dialogButtonCancel, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 
