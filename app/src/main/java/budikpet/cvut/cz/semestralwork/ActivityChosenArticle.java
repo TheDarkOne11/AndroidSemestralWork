@@ -80,7 +80,7 @@ public class ActivityChosenArticle extends AppCompatActivity implements Fragment
 			}
 
 			// Setup intent
-			ShareIntent.setType("text/plain");
+			ShareIntent.setType("url/plain");
 			ShareIntent.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.shareSubject),
 					cursor.getString(cursor.getColumnIndex(ArticleTable.HEADING))));
 			ShareIntent.putExtra(Intent.EXTRA_TEXT, String.format(getString(R.string.shareText),

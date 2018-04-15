@@ -14,13 +14,13 @@ import budikpet.cvut.cz.semestralwork.R;
  * Cursor adapter working with ListView of articles.
  */
 public class ArticlesCursorAdapter extends CursorAdapter {
-	private LayoutInflater mInflater;
-	private Context mContext;
+	private LayoutInflater inflater;
+	private Context context;
 
 	public ArticlesCursorAdapter(Context context, Cursor c, int flags) {
 		super(context, c, flags);
-		mInflater = LayoutInflater.from(context);
-		mContext = context;
+		inflater = LayoutInflater.from(context);
+		this.context = context;
 	}
 
 	/**
@@ -32,7 +32,7 @@ public class ArticlesCursorAdapter extends CursorAdapter {
 	 */
 	@Override
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
-		return mInflater.inflate(R.layout.row_article, parent, false);
+		return inflater.inflate(R.layout.row_article, parent, false);
 	}
 
 	/**
@@ -43,12 +43,30 @@ public class ArticlesCursorAdapter extends CursorAdapter {
 	 */
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
-		TextView heading = view.findViewById(R.id.rowHeading);
-		heading.setText(cursor.getString(cursor.getColumnIndex(ArticleTable.HEADING)));
+		ViewHolder holder = (ViewHolder) view.getTag();
 
-		TextView text = view.findViewById(R.id.rowText);
-		text.setText(cursor.getString(cursor.getColumnIndex(ArticleTable.TEXT)));
+		if(holder == null) {
+			// Create view holder
+			holder = new ViewHolder();
+			holder.heading = view.findViewById(R.id.rowHeading);
+			holder.text = view.findViewById(R.id.rowText);
+			holder.columnHeadingID = cursor.getColumnIndex(ArticleTable.HEADING);
+			holder.columnTextID = cursor.getColumnIndex(ArticleTable.TEXT);
+			holder.columnIdID = cursor.getColumnIndex(ArticleTable.ID);
+			view.setTag(holder);
+		}
 
-		view.setTag(R.id.keyChosenArticleId, cursor.getInt(cursor.getColumnIndex(ArticleTable.ID)));
+		// Use ViewHolders references to it's TextViews to give them new data of the current view.
+		holder.heading.setText(cursor.getString(holder.columnHeadingID));
+		holder.text.setText(cursor.getString(holder.columnTextID));
+		view.setTag(R.id.keyChosenArticleId, cursor.getInt(holder.columnIdID));
+	}
+
+	private class ViewHolder {
+		public TextView heading;
+		public TextView text;
+		public int columnHeadingID;
+		public int columnTextID;
+		public int columnIdID;
 	}
 }

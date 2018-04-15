@@ -9,6 +9,7 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import budikpet.cvut.cz.semestralwork.R;
+import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
 
 /**
  * Cursor adapter working with ListView of articles.
@@ -43,12 +44,30 @@ public class FeedsCursorAdapter extends CursorAdapter {
 	 */
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
-		TextView heading = view.findViewById(R.id.feedHeading);
-		heading.setText(cursor.getString(cursor.getColumnIndex(FeedTable.HEADING)));
+		ViewHolder holder = (ViewHolder) view.getTag();
 
-		TextView url = view.findViewById(R.id.feedUrl);
-		url.setText(cursor.getString(cursor.getColumnIndex(FeedTable.URL)));
+		if(holder == null) {
+			// Create view holder
+			holder = new ViewHolder();
+			holder.heading = view.findViewById(R.id.rowHeading);
+			holder.url = view.findViewById(R.id.rowText);
+			holder.columnHeadingID = cursor.getColumnIndex(FeedTable.HEADING);
+			holder.columnUrlID = cursor.getColumnIndex(FeedTable.URL);
+			holder.columnIdID = cursor.getColumnIndex(FeedTable.ID);
+			view.setTag(holder);
+		}
 
-		view.setTag(R.id.keyFeedId, cursor.getInt(cursor.getColumnIndex(FeedTable.ID)));
+		// Use ViewHolders references to it's TextViews to give them new data of the current view.
+		holder.heading.setText(cursor.getString(holder.columnHeadingID));
+		holder.url.setText(cursor.getString(holder.columnUrlID));
+		view.setTag(R.id.keyFeedId, cursor.getInt(holder.columnIdID));
+	}
+
+	private class ViewHolder {
+		public TextView heading;
+		public TextView url;
+		public int columnHeadingID;
+		public int columnUrlID;
+		public int columnIdID;
 	}
 }
