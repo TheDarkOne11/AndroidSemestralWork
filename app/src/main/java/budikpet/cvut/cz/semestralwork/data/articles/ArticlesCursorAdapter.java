@@ -48,8 +48,8 @@ public class ArticlesCursorAdapter extends CursorAdapter {
 		if(holder == null) {
 			// Create view holder
 			holder = new ViewHolder();
-			holder.heading = view.findViewById(R.id.rowHeading);
-			holder.text = view.findViewById(R.id.rowText);
+			holder.heading = view.findViewById(R.id.articleHeading);
+			holder.text = view.findViewById(R.id.articleText);
 			holder.columnHeadingID = cursor.getColumnIndex(ArticleTable.HEADING);
 			holder.columnTextID = cursor.getColumnIndex(ArticleTable.TEXT);
 			holder.columnIdID = cursor.getColumnIndex(ArticleTable.ID);

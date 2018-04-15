@@ -26,4 +26,8 @@
     <!-- ActivityChosenArticle menu -->
     <string name="itemShare">Share</string>
     <string name="itemAddFeed">Add feed</string>
+    <string name="urlInputHing">Feed URL</string>
+    <string name="addFeedHeader">Add Feed</string>
+    <string name="addFeedAccept">Add</string>
+    <string name="rssNotFound">RSS feed not found</string>
 </resources>

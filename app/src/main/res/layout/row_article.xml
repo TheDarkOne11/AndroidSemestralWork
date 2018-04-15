@@ -7,7 +7,7 @@
     android:orientation="vertical">
 
     <TextView
-        android:id="@+id/rowHeading"
+        android:id="@+id/articleHeading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="4dp"
@@ -19,7 +19,7 @@
         tools:ignore="HardcodedText" />
 
     <TextView
-        android:id="@+id/rowText"
+        android:id="@+id/articleText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ellipsize="end"

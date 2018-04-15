@@ -8,8 +8,8 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
+import budikpet.cvut.cz.semestralwork.ActivityConfigureFeeds;
 import budikpet.cvut.cz.semestralwork.R;
-import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
 
 /**
  * Cursor adapter working with ListView of articles.
@@ -49,8 +49,8 @@ public class FeedsCursorAdapter extends CursorAdapter {
 		if(holder == null) {
 			// Create view holder
 			holder = new ViewHolder();
-			holder.heading = view.findViewById(R.id.rowHeading);
-			holder.url = view.findViewById(R.id.rowText);
+			holder.heading = view.findViewById(R.id.feedHeading);
+			holder.url = view.findViewById(R.id.feedUrl);
 			holder.columnHeadingID = cursor.getColumnIndex(FeedTable.HEADING);
 			holder.columnUrlID = cursor.getColumnIndex(FeedTable.URL);
 			holder.columnIdID = cursor.getColumnIndex(FeedTable.ID);
