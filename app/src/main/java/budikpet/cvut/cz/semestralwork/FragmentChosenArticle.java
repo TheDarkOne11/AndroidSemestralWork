@@ -6,6 +6,8 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Html;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -81,13 +83,17 @@ public class FragmentChosenArticle extends Fragment {
 			// Build article from components
 			heading.setText(cursor.getString(cursor.getColumnIndex(ArticleTable.HEADING)));
 			subheading.setText(getSubheading(activityContext, timeCreated, author));
-			mainText.setText(cursor.getString(cursor.getColumnIndex(ArticleTable.TEXT)));
 			link.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
 					startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
 				}
 			});
+
+			// TODO Use Webview?
+			String text = cursor.getString(cursor.getColumnIndex(ArticleTable.TEXT));
+			mainText.setText(Html.fromHtml(text));
+			mainText.setMovementMethod(LinkMovementMethod.getInstance());
 		} catch (IndexOutOfBoundsException e) {
 			Log.e("CURSOR_ERROR", e.getMessage());
         	e.printStackTrace();

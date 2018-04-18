@@ -35,4 +35,5 @@
     <string name="removeDialogDelete">Delete</string>
     <string name="dialogButtonCancel">Cancel</string>
     <string name="dialogAddFeed">Add</string>
+    <string name="syncProgress">Loading...</string>
 </resources>

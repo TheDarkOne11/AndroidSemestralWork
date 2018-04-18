@@ -78,6 +78,8 @@ public class FeedDataLoader extends Fragment {
                 e.printStackTrace();
             }
 
+            SystemClock.sleep(5000);
+
             // Send result to postExecute()
             return result;
         }

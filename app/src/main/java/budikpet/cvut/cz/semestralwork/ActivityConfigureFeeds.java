@@ -84,9 +84,9 @@ public class ActivityConfigureFeeds extends AppCompatActivity
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 			case (R.id.itemAddFeed) :
-				// TODO Create functionality
-				Log.i("MENU", "Add feed clicked");
-				addFeed();
+				// Starts new addFeed dialog
+				DialogAddFeed dialogAddFeed = new DialogAddFeed();
+				dialogAddFeed.show(getSupportFragmentManager(), "DialogAddFeed");
 				return true;
 			case (android.R.id.home) :
 				finish();
@@ -158,10 +158,11 @@ public class ActivityConfigureFeeds extends AppCompatActivity
 		// Save feed
 		SyndFeed feed = feeds.get(0);
 		cv.put(FeedTable.HEADING, feed.getTitle());
-		cv.put(FeedTable.URL, feed.getLink());
+		cv.put(FeedTable.URL, lastAddedUrl);
 		getContentResolver().insert(FeedReaderContentProvider.FEED_URI, cv);
 
 		// Save entries
+		// TODO Save entries of the new feed
 //		for(Object curr : feed.getEntries()) {
 //			SyndEntry entry = (SyndEntry) curr;
 //
@@ -208,12 +209,6 @@ public class ActivityConfigureFeeds extends AppCompatActivity
 
 		AlertDialog dialog = builder.create();
 		dialog.show();
-	}
-
-	public void addFeed() {
-		// Starts new dialog
-		DialogAddFeed dialogAddFeed = new DialogAddFeed();
-		dialogAddFeed.show(getSupportFragmentManager(), "DialogAddFeed");
 	}
 
 	@Override
