@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/itemAddFeed"
-        android:icon="@android:drawable/ic_input_add"
+        android:icon="@drawable/add_icon"
         android:title="@string/itemAddFeed"
         app:showAsAction="always" />
 
