@@ -22,6 +22,7 @@ import java.util.ArrayList;
 public class FeedDataLoader extends Fragment {
     private LoaderAsyncTask task;
     private TaskCallbacks callbacks;
+    private boolean running = false;
 
     public interface TaskCallbacks {
         void onPreExecute();
@@ -62,7 +63,11 @@ public class FeedDataLoader extends Fragment {
         this.setRetainInstance(true);
     }
 
-    private class LoaderAsyncTask extends AsyncTask<String, Integer, ArrayList<SyndFeed>> {
+	public boolean isRunning() {
+		return running;
+	}
+
+	private class LoaderAsyncTask extends AsyncTask<String, Integer, ArrayList<SyndFeed>> {
 
         @Override
         protected ArrayList<SyndFeed> doInBackground(String... urls) {
@@ -78,7 +83,7 @@ public class FeedDataLoader extends Fragment {
                 e.printStackTrace();
             }
 
-            SystemClock.sleep(5000);
+//            SystemClock.sleep(5000);
 
             // Send result to postExecute()
             return result;
@@ -87,12 +92,14 @@ public class FeedDataLoader extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            running = true;
             callbacks.onPreExecute();
         }
 
         @Override
         protected void onPostExecute(ArrayList<SyndFeed> syndFeed) {
             super.onPostExecute(syndFeed);
+            running = false;
             callbacks.onPostExecute(syndFeed);
         }
 

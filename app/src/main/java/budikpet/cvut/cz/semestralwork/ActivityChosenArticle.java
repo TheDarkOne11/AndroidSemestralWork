@@ -2,6 +2,7 @@ package budikpet.cvut.cz.semestralwork;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -71,9 +72,9 @@ public class ActivityChosenArticle extends AppCompatActivity implements Fragment
     private void share() {
         Intent ShareIntent = new Intent(Intent.ACTION_SEND);
 		try(Cursor cursor = getContentResolver()
-				.query(FeedReaderContentProvider.ARTICLE_URI,
-						new String[] {ArticleTable.ID, ArticleTable.URL, ArticleTable.HEADING},
-						ArticleTable.ID + "=\'" + articleId + "\'", null, null)) {
+				.query(Uri.withAppendedPath(FeedReaderContentProvider.ARTICLE_URI, articleId + ""),
+			new String[] {ArticleTable.ID, ArticleTable.URL, ArticleTable.HEADING},
+						null, null, null)) {
 
 			if(cursor == null || !cursor.moveToFirst()) {
 				throw new IndexOutOfBoundsException("Problem with cursor: " + articleId);

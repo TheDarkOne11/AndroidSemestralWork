@@ -26,16 +26,26 @@ public class FeedReaderContentProvider extends ContentProvider {
 	 */
 	private static final int ARTICLE_LIST = 1;
 	/**
+	 * One article
+	 */
+	private static final int ARTICLE = 2;
+	/**
 	 * All feeds.
 	 */
-	private static final int FEED_LIST = 2;
+	private static final int FEED_LIST = 3;
+	/**
+	 * One feed.
+	 */
+	private static final int FEED = 4;
 
 
 	private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
 	static {
 		sURIMatcher.addURI(AUTHORITY, ArticleTable.BASE_PATH, ARTICLE_LIST);
+		sURIMatcher.addURI(AUTHORITY, ArticleTable.BASE_PATH + "/#", ARTICLE);
 		sURIMatcher.addURI(AUTHORITY, FeedTable.BASE_PATH, FEED_LIST);
+		sURIMatcher.addURI(AUTHORITY, FeedTable.BASE_PATH + "/#", FEED_LIST);
 	}
 
 	public FeedReaderContentProvider() {
@@ -46,12 +56,21 @@ public class FeedReaderContentProvider extends ContentProvider {
 		int uriType = sURIMatcher.match(uri);
 		SQLiteDatabase sqlDB = dbHelper.getWritableDatabase();
 		int rowsDeleted;
+		String id;
 		switch (uriType) {
 			case ARTICLE_LIST:
 				rowsDeleted = sqlDB.delete(ArticleTable.TABLE_NAME, selection, selectionArgs);
 				break;
+			case ARTICLE:
+				id = uri.getLastPathSegment();
+				rowsDeleted = sqlDB.delete(ArticleTable.TABLE_NAME, ArticleTable.ID + "=" + id, null);
+				break;
 			case FEED_LIST:
 				rowsDeleted = sqlDB.delete(FeedTable.TABLE_NAME, selection, selectionArgs);
+				break;
+			case FEED:
+				id = uri.getLastPathSegment();
+				rowsDeleted = sqlDB.delete(FeedTable.TABLE_NAME, FeedTable.ID + "=" + id, null);
 				break;
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);
@@ -104,8 +123,16 @@ public class FeedReaderContentProvider extends ContentProvider {
 			case ARTICLE_LIST:
 				queryBuilder.setTables(ArticleTable.TABLE_NAME);
 				break;
+			case ARTICLE:
+				queryBuilder.setTables(ArticleTable.TABLE_NAME);
+				queryBuilder.appendWhere(ArticleTable.ID + "=" + uri.getLastPathSegment());
+				break;
 			case FEED_LIST:
 				queryBuilder.setTables(FeedTable.TABLE_NAME);
+				break;
+			case FEED:
+				queryBuilder.setTables(FeedTable.TABLE_NAME);
+				queryBuilder.appendWhere(FeedTable.ID + "=" + uri.getLastPathSegment());
 				break;
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);

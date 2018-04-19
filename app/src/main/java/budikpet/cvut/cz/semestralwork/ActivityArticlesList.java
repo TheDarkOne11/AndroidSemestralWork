@@ -28,7 +28,6 @@ import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
 public class ActivityArticlesList extends AppCompatActivity
 		implements FragmentArticlesList.InteractionListener, FeedDataLoader.TaskCallbacks {
 	private FeedDataLoader feedDataLoader;
-	private boolean refreshing = false;
 	private MenuItem itemRefreshProgress, itemRefreshIcon;
 
     @Override
@@ -39,10 +38,7 @@ public class ActivityArticlesList extends AppCompatActivity
 
         if (savedInstanceState == null) {
 			fm.beginTransaction().add(R.id.newsListContainer, FragmentArticlesList.newInstance()).commit();
-        } else {
-			// Synchronization
-			refreshing = (boolean) savedInstanceState.get(R.id.isRefreshing + "");
-		}
+        }
 
 		// Add loader fragment if it doesn't exist
 		String tag = "feedDataLoader";
@@ -52,13 +48,6 @@ public class ActivityArticlesList extends AppCompatActivity
 			fm.beginTransaction().add(feedDataLoader, tag).commit();
 		}
     }
-
-	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putBoolean(R.id.isRefreshing + "", refreshing);
-
-	}
 
 	@Override
     public void showChosenArticle(View v) {
@@ -89,7 +78,7 @@ public class ActivityArticlesList extends AppCompatActivity
 		itemRefreshProgress = menu.findItem(R.id.itemSyncProgress);
 		itemRefreshIcon = menu.findItem(R.id.itemSyncIcon);
 
-		setRefreshing(refreshing);
+		setRefreshing(feedDataLoader.isRunning());
 		return super.onPrepareOptionsMenu(menu);
 	}
 
@@ -124,7 +113,6 @@ public class ActivityArticlesList extends AppCompatActivity
 
 		itemRefreshIcon.setVisible(!refreshing);
 		itemRefreshProgress.setVisible(refreshing);
-		this.refreshing = refreshing;
 	}
 
     private void synchronizeData() {

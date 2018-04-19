@@ -63,8 +63,8 @@ public class FragmentChosenArticle extends Fragment {
 				ArticleTable.TEXT, ArticleTable.TIME_CREATED, ArticleTable.AUTHOR, ArticleTable.URL};
 
         try(Cursor cursor = activityContext.getContentResolver()
-				.query(FeedReaderContentProvider.ARTICLE_URI,
-						columns, ArticleTable.ID + "=\'" + articleId + "\'", null, null)) {
+				.query(Uri.withAppendedPath(FeedReaderContentProvider.ARTICLE_URI, articleId + ""),
+						columns, null, null, null)) {
 
         	if(cursor == null || !cursor.moveToFirst()) {
         		Log.i("ARTICLE_ID", articleId + "");
