@@ -13,6 +13,7 @@ import android.support.v4.content.Loader;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -26,7 +27,7 @@ public class FragmentChosenArticle extends Fragment implements LoaderManager.Loa
 	private int articleId;
 	private final int LOADER_ID = 2;
 	private Context activityContext;
-	private Cursor mData;
+	private Cursor data;
 
 	private TextView heading;
 	private TextView subheading;
@@ -40,6 +41,7 @@ public class FragmentChosenArticle extends Fragment implements LoaderManager.Loa
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
 	}
 
 	@Override
@@ -93,8 +95,8 @@ public class FragmentChosenArticle extends Fragment implements LoaderManager.Loa
 
 	@Override
 	public void onLoadFinished(Loader<Cursor> loader, final Cursor data) {
-		mData = data;
-		if (data != null && mData.moveToFirst()) {
+		this.data = data;
+		if (data != null && this.data.moveToFirst()) {
 			updateViewsWithContent(data);
 
 //			mainText.setOnClickListener(new View.OnClickListener() {
@@ -175,5 +177,33 @@ public class FragmentChosenArticle extends Fragment implements LoaderManager.Loa
 	public void onDetach() {
 		super.onDetach();
 		activityContext = null;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case (R.id.itemShareArticle) :
+				share();
+				return true;
+		}
+
+		return super.onOptionsItemSelected(item);
+	}
+
+	/**
+	 * Implementation of current article share functionality.
+	 */
+	private void share() {
+		Intent shareIntent = new Intent(Intent.ACTION_SEND);
+
+		// Setup intent
+		String url = data.getString(data.getColumnIndex(ArticleTable.URL));
+		shareIntent.setType("text/plain");
+		shareIntent.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.shareSubject),
+				heading.getText()));
+		shareIntent.putExtra(Intent.EXTRA_TEXT, String.format(getString(R.string.shareText),
+					url));
+
+		startActivity(Intent.createChooser(shareIntent, getString(R.string.shareIntent)));
 	}
 }

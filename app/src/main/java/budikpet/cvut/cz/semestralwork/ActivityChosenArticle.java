@@ -49,47 +49,14 @@ public class ActivityChosenArticle extends AppCompatActivity {
         return true;
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case (R.id.itemShareArticle) :
-                share();
-                return true;
-            case android.R.id.home:
-                finish();
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    /**
-     * Implementation of current article share functionality.
-     */
-    private void share() {
-        Intent ShareIntent = new Intent(Intent.ACTION_SEND);
-		try(Cursor cursor = getContentResolver()
-				.query(Uri.withAppendedPath(FeedReaderContentProvider.ARTICLE_URI, articleId + ""),
-			new String[] {ArticleTable.ID, ArticleTable.URL, ArticleTable.HEADING},
-						null, null, null)) {
-
-			if(cursor == null || !cursor.moveToFirst()) {
-				throw new IndexOutOfBoundsException("Problem with cursor: " + articleId);
-			}
-
-			// Setup intent
-			ShareIntent.setType("url/plain");
-			ShareIntent.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.shareSubject),
-					cursor.getString(cursor.getColumnIndex(ArticleTable.HEADING))));
-			ShareIntent.putExtra(Intent.EXTRA_TEXT, String.format(getString(R.string.shareText),
-					cursor.getString(cursor.getColumnIndex(ArticleTable.URL))));
-		} catch (IndexOutOfBoundsException e) {
-			Log.e("CURSOR_ERROR", e.getMessage());
-			e.printStackTrace();
-			return;
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+			case android.R.id.home:
+				finish();
+				return true;
 		}
 
-        startActivity(Intent.createChooser(ShareIntent, getString(R.string.shareIntent)));
-
-    }
+		return super.onOptionsItemSelected(item);
+	}
 }
