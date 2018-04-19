@@ -1,6 +1,10 @@
 package budikpet.cvut.cz.semestralwork;
 
+import android.app.Activity;
+import android.content.ContentUris;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.Loader;
@@ -10,24 +14,17 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
+
+import java.net.URI;
 
 import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
 import budikpet.cvut.cz.semestralwork.data.FeedReaderContentProvider;
 import budikpet.cvut.cz.semestralwork.data.articles.ArticlesCursorAdapter;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link InteractionListener} interface
- * to handle interaction events.
- * Use the {@link FragmentArticlesList#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cursor> {
 	private final int LOADER_ID = 1;
-    private InteractionListener listener;
     private ListView listView;
     private ArticlesCursorAdapter adapter;
     private Context activityContext;
@@ -55,6 +52,18 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 		listView = fragmentView.findViewById(R.id.articlesListView);
 		adapter = new ArticlesCursorAdapter(activityContext, null, 0);
 		listView.setAdapter(adapter);
+		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				Cursor cursor = (Cursor) adapter.getItem(position);
+				Uri contentUri = ContentUris.withAppendedId(FeedReaderContentProvider.ARTICLE_URI,
+						cursor.getLong(cursor.getColumnIndex(ArticleTable.ID)));
+
+				Intent intent = new Intent(activityContext, ActivityChosenArticle.class);
+				intent.setData(contentUri);
+				startActivity(intent);
+			}
+		});
 
 		// Start cursor loader
 		getLoaderManager().initLoader(LOADER_ID, null, this);
@@ -64,19 +73,12 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof InteractionListener) {
-            listener = (InteractionListener) context;
-			activityContext = context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement InteractionListener");
-        }
+        activityContext = context;
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        listener = null;
         activityContext = null;
     }
 
@@ -119,19 +121,4 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 				break;
 		}
 	}
-
-
-	/**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface InteractionListener {
-        void showChosenArticle(View v);
-    }
 }

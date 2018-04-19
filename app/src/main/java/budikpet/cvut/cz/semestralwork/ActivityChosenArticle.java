@@ -3,6 +3,7 @@ package budikpet.cvut.cz.semestralwork;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,7 +14,7 @@ import android.view.MenuItem;
 import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
 import budikpet.cvut.cz.semestralwork.data.FeedReaderContentProvider;
 
-public class ActivityChosenArticle extends AppCompatActivity implements FragmentChosenArticle.InteractionListener {
+public class ActivityChosenArticle extends AppCompatActivity {
     private int articleId;
 
     @Override
@@ -23,22 +24,18 @@ public class ActivityChosenArticle extends AppCompatActivity implements Fragment
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if(savedInstanceState == null) {
-            // Activity started for the first time
-            Bundle extras = getIntent().getExtras();
-            articleId = extras.getInt(R.id.keyChosenArticleId + "");
+			// Activity started for the first time
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.articleContainer, FragmentChosenArticle.newInstance(articleId))
+                    .add(R.id.articleContainer, createArticleDetailFragment())
                     .commit();
-        } else {
-        	articleId = savedInstanceState.getInt(R.id.keyChosenArticleId + "");
-		}
+        }
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(R.id.keyChosenArticleId + "", articleId);
-    }
+	private Fragment createArticleDetailFragment() {
+		Bundle args = new Bundle();
+		args.putParcelable(R.id.keyChosenArticleId + "", getIntent().getData());
+		return Fragment.instantiate(this, FragmentChosenArticle.class.getName(), args);
+	}
 
     /**
      * Creates new menu with share button.

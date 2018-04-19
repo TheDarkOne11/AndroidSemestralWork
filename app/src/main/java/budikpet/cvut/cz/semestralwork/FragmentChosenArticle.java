@@ -6,105 +6,118 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.support.v4.app.Fragment;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
-import budikpet.cvut.cz.semestralwork.data.FeedReaderContentProvider;
 
-
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link InteractionListener} interface
- * to handle interaction events.
- * Use the {@link FragmentChosenArticle#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class FragmentChosenArticle extends Fragment {
-    private int articleId;
+public class FragmentChosenArticle extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+	private int articleId;
 	private final int LOADER_ID = 2;
 	private Context activityContext;
-    private InteractionListener listener;
+	private Cursor mData;
 
-    public FragmentChosenArticle() {
-        // Required empty public constructor
-    }
+	private TextView heading;
+	private TextView subheading;
+	private TextView link;
+	private TextView mainText;
 
-    public static FragmentChosenArticle newInstance(int articleId) {
-        FragmentChosenArticle fragment = new FragmentChosenArticle();
-        Bundle args = new Bundle();
-        args.putInt(R.id.keyChosenArticleId + "", articleId);
-        fragment.setArguments(args);
-        return fragment;
-    }
+	public FragmentChosenArticle() {
+		// Required empty public constructor
+	}
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        articleId = getArguments().getInt(R.id.keyChosenArticleId + "");
-    }
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+	}
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_chosen_article, container, false);
+	@Override
+	public void onViewCreated(View view, Bundle savedInstanceState) {
+		super.onViewCreated(view, savedInstanceState);
 
-		String[] columns = new String[] {ArticleTable.ID, ArticleTable.HEADING,
-				ArticleTable.TEXT, ArticleTable.TIME_CREATED, ArticleTable.AUTHOR, ArticleTable.URL};
+		heading = (TextView) view.findViewById(R.id.heading);
+		subheading = (TextView) view.findViewById(R.id.subheading);
+		link = (TextView) view.findViewById(R.id.fullArticleLink);
+		mainText = (TextView) view.findViewById(R.id.mainText);
 
-        try(Cursor cursor = activityContext.getContentResolver()
-				.query(Uri.withAppendedPath(FeedReaderContentProvider.ARTICLE_URI, articleId + ""),
-						columns, null, null, null)) {
+		mainText.setMovementMethod(LinkMovementMethod.getInstance());
+	}
 
-        	if(cursor == null || !cursor.moveToFirst()) {
-        		Log.i("ARTICLE_ID", articleId + "");
-				throw new IndexOutOfBoundsException("Problem with cursor");
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		getLoaderManager().initLoader(LOADER_ID, null, this);
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+							 Bundle savedInstanceState) {
+		return inflater.inflate(R.layout.fragment_chosen_article, container, false);
+	}
+
+	public void updateViewsWithContent(Cursor cursor) {
+		long timeCreated = cursor.getLong(cursor.getColumnIndex(ArticleTable.TIME_CREATED));
+		String author = cursor.getString(cursor.getColumnIndex(ArticleTable.AUTHOR));
+		final String url = cursor.getString(cursor.getColumnIndex(ArticleTable.URL));
+
+		// Build article from components
+		heading.setText(cursor.getString(cursor.getColumnIndex(ArticleTable.HEADING)));
+		subheading.setText(getSubheading(activityContext, timeCreated, author));
+		link.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
 			}
+		});
 
-			TextView heading = view.findViewById(R.id.heading);
-			TextView subheading = view.findViewById(R.id.subheading);
-			TextView mainText = view.findViewById(R.id.mainText);
-			TextView link = view.findViewById(R.id.fullArticleLink);
+		String text = cursor.getString(cursor.getColumnIndex(ArticleTable.TEXT));
+		mainText.setText(Html.fromHtml(text));
+	}
 
-			long timeCreated = cursor.getLong(cursor.getColumnIndex(ArticleTable.TIME_CREATED));
-			String author = cursor.getString(cursor.getColumnIndex(ArticleTable.AUTHOR));
-			final String url = cursor.getString(cursor.getColumnIndex(ArticleTable.URL));
+	@Override
+	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+		return new CursorLoader(getActivity(), getArguments().<Uri>getParcelable(R.id.keyChosenArticleId + ""),
+				null, null, null, null);
+	}
 
-			// Build article from components
-			heading.setText(cursor.getString(cursor.getColumnIndex(ArticleTable.HEADING)));
-			subheading.setText(getSubheading(activityContext, timeCreated, author));
-			link.setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View v) {
-					startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-				}
-			});
+	@Override
+	public void onLoadFinished(Loader<Cursor> loader, final Cursor data) {
+		mData = data;
+		if (data != null && mData.moveToFirst()) {
+			updateViewsWithContent(data);
 
-			// TODO Use Webview?
-			String text = cursor.getString(cursor.getColumnIndex(ArticleTable.TEXT));
-			mainText.setText(Html.fromHtml(text));
-			mainText.setMovementMethod(LinkMovementMethod.getInstance());
-		} catch (IndexOutOfBoundsException e) {
-			Log.e("CURSOR_ERROR", e.getMessage());
-        	e.printStackTrace();
+//			mainText.setOnClickListener(new View.OnClickListener() {
+//				@Override
+//				public void onClick(View v) {
+//					Intent intent = new Intent(Intent.ACTION_VIEW);
+//					intent.addCategory(Intent.CATEGORY_BROWSABLE);
+//					intent.setData(Uri.parse(data.getString(data.getColumnIndex(Contract.Entry.LINK))));
+//					startActivity(intent);
+//				}
+//			});
 		}
+	}
 
-        return view;
-    }
+	@Override
+	public void onLoaderReset(Loader<Cursor> loader) {
+		// Do nothing.
+	}
 
 	/**
 	 * String of the subheading changes according to how long ago was the article published.
 	 * This method creates this string.
+	 *
 	 * @return subheading string
 	 */
 	private String getSubheading(Context context, long timeCreated, String author) {
@@ -118,8 +131,8 @@ public class FragmentChosenArticle extends Fragment {
 		String calendarString;
 		if (today.get(Calendar.YEAR) == articleDate.get(Calendar.YEAR)) {
 			if (today.get(Calendar.DAY_OF_YEAR) - articleDate.get(Calendar.DAY_OF_YEAR) < 7) {
-				if(today.get(Calendar.DAY_OF_YEAR) == articleDate.get(Calendar.DAY_OF_YEAR)) {
-					if(today.get(Calendar.HOUR_OF_DAY) == articleDate.get(Calendar.HOUR_OF_DAY)) {
+				if (today.get(Calendar.DAY_OF_YEAR) == articleDate.get(Calendar.DAY_OF_YEAR)) {
+					if (today.get(Calendar.HOUR_OF_DAY) == articleDate.get(Calendar.HOUR_OF_DAY)) {
 						// Same hour
 						calendarString = String.format(res.getString(R.string.calendar_lessThanHour),
 								today.get(Calendar.MINUTE) - articleDate.get(Calendar.MINUTE));
@@ -128,7 +141,7 @@ public class FragmentChosenArticle extends Fragment {
 						calendarString = String.format(res.getString(R.string.calendar_lessThanDay),
 								today.get(Calendar.HOUR_OF_DAY) - articleDate.get(Calendar.HOUR_OF_DAY));
 					}
-				} else if(today.get(Calendar.DAY_OF_YEAR) - 1 == articleDate.get(Calendar.DAY_OF_YEAR)) {
+				} else if (today.get(Calendar.DAY_OF_YEAR) - 1 == articleDate.get(Calendar.DAY_OF_YEAR)) {
 					// Yesterday
 					calendarString = res.getString(R.string.calendar_yesterday);
 				} else {
@@ -153,35 +166,14 @@ public class FragmentChosenArticle extends Fragment {
 	}
 
 	@Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof InteractionListener) {
-            listener = (InteractionListener) context;
-            activityContext = context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement InteractionListener");
-        }
-    }
+	public void onAttach(Context context) {
+		super.onAttach(context);
+		activityContext = context;
+	}
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        listener = null;
-        activityContext = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface InteractionListener {
-
-    }
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		activityContext = null;
+	}
 }

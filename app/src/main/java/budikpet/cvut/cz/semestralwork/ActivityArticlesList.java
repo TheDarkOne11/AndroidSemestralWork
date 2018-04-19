@@ -26,7 +26,7 @@ import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
 import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
 
 public class ActivityArticlesList extends AppCompatActivity
-		implements FragmentArticlesList.InteractionListener, FeedDataLoader.TaskCallbacks {
+		implements FeedDataLoader.TaskCallbacks {
 	private FeedDataLoader feedDataLoader;
 	private MenuItem itemRefreshProgress, itemRefreshIcon;
 
@@ -47,17 +47,6 @@ public class ActivityArticlesList extends AppCompatActivity
 			feedDataLoader = new FeedDataLoader();
 			fm.beginTransaction().add(feedDataLoader, tag).commit();
 		}
-    }
-
-	@Override
-    public void showChosenArticle(View v) {
-        // Get stored article through ID that was stored in View
-        int articleId = (int) v.getTag(R.id.keyChosenArticleId);
-
-        Intent showArticle = new Intent(this, ActivityChosenArticle.class);
-        showArticle.putExtra(R.id.keyChosenArticleId + "", articleId);
-
-        startActivity(showArticle);
     }
 
     /**
