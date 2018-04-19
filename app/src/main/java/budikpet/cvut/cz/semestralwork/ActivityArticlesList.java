@@ -87,9 +87,6 @@ public class ActivityArticlesList extends AppCompatActivity
                 // TODO Create functionality
                 Log.i("MENU", "About clicked");
                 return true;
-			case R.id.itemSyncIcon:
-				synchronizeData();
-				return true;
         }
 
         return super.onOptionsItemSelected(item);
@@ -102,29 +99,6 @@ public class ActivityArticlesList extends AppCompatActivity
 
 		itemRefreshIcon.setVisible(!refreshing);
 		itemRefreshProgress.setVisible(refreshing);
-	}
-
-    private void synchronizeData() {
-		try(Cursor cursor = getContentResolver().query(FeedReaderContentProvider.FEED_URI,
-				new String[]{FeedTable.URL}, null, null, null)) {
-			if(cursor == null) {
-				throw new IndexOutOfBoundsException("Problem with cursor");
-			}
-
-			String[] urls = new String[cursor.getCount()];
-			int counter = 0;
-
-			// Get all URLs
-			while(cursor.moveToNext()) {
-				urls[counter] = cursor.getString(cursor.getColumnIndex(FeedTable.URL));
-				counter++;
-			}
-
-			feedDataLoader.execute(urls);
-
-		} catch(IndexOutOfBoundsException e) {
-			e.printStackTrace();
-		}
 	}
 
 	@Override

@@ -1,33 +1,37 @@
 package budikpet.cvut.cz.semestralwork;
 
-import android.app.Activity;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.app.LoaderManager.LoaderCallbacks;
-import android.support.v4.content.Loader;
-import android.support.v4.app.Fragment;
 import android.database.Cursor;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
-import java.net.URI;
-
-import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
+import budikpet.cvut.cz.semestralwork.data.FeedDataLoader;
 import budikpet.cvut.cz.semestralwork.data.FeedReaderContentProvider;
+import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
 import budikpet.cvut.cz.semestralwork.data.articles.ArticlesCursorAdapter;
+import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
 
 public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cursor> {
 	private final int LOADER_ID = 1;
     private ListView listView;
     private ArticlesCursorAdapter adapter;
     private Context activityContext;
+    private FeedDataLoader feedDataLoader;
 
     public FragmentArticlesList() {
         // Required empty public constructor
@@ -43,7 +47,22 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 		return new FragmentArticlesList();
     }
 
-    @Override
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setHasOptionsMenu(true);
+
+		// Add loader fragment if it doesn't exist
+		FragmentManager fm = getActivity().getSupportFragmentManager();
+		String tag = "feedDataLoader";
+		feedDataLoader = (FeedDataLoader) fm.findFragmentByTag(tag);
+		if (feedDataLoader == null) {
+			feedDataLoader = new FeedDataLoader();
+			fm.beginTransaction().add(feedDataLoader, tag).commit();
+		}
+	}
+
+	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View fragmentView = inflater.inflate(R.layout.fragment_articles_list, container, false);
@@ -119,6 +138,58 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 
 			default:
 				break;
+		}
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(final MenuItem item) {
+		switch (item.getItemId()) {
+			case R.id.itemSyncIcon:
+				new Synchronize().execute();
+				return true;
+		}
+
+		return super.onOptionsItemSelected(item);
+	}
+
+	/**
+	 * Used for getting RSS URLs asynchronously.
+	 */
+	private class Synchronize extends AsyncTask<Void, Void, String[]> {
+
+		@Override
+		protected String[] doInBackground(Void... voids) {
+			String[] urls;
+			try(Cursor cursor = activityContext.getContentResolver().query(FeedReaderContentProvider.FEED_URI,
+					new String[]{FeedTable.URL}, null, null, null)) {
+				if(cursor == null) {
+					throw new IndexOutOfBoundsException("Problem with cursor");
+				}
+
+				urls = new String[cursor.getCount()];
+				int counter = 0;
+
+				// Get all URLs
+				while(cursor.moveToNext()) {
+					urls[counter] = cursor.getString(cursor.getColumnIndex(FeedTable.URL));
+					counter++;
+				}
+
+				return urls;
+
+			} catch(IndexOutOfBoundsException e) {
+				e.printStackTrace();
+			}
+
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String[] strings) {
+			super.onPostExecute(strings);
+
+			// Find feeds
+			feedDataLoader.execute(strings);
 		}
 	}
 }
