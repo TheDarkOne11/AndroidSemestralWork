@@ -28,24 +28,24 @@ import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
 
 public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cursor> {
 	private final int LOADER_ID = 1;
-    private ListView listView;
-    private ArticlesCursorAdapter adapter;
-    private Context activityContext;
-    private FeedDataLoader feedDataLoader;
+	private ListView listView;
+	private ArticlesCursorAdapter adapter;
+	private Context activityContext;
+	private FeedDataLoader feedDataLoader;
 
-    public FragmentArticlesList() {
-        // Required empty public constructor
-    }
+	public FragmentArticlesList() {
+		// Required empty public constructor
+	}
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @return A new instance of fragment FragmentArticlesList.
-     */
-    public static FragmentArticlesList newInstance() {
+	/**
+	 * Use this factory method to create a new instance of
+	 * this fragment using the provided parameters.
+	 *
+	 * @return A new instance of fragment FragmentArticlesList.
+	 */
+	public static FragmentArticlesList newInstance() {
 		return new FragmentArticlesList();
-    }
+	}
 
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -63,11 +63,11 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 	}
 
 	@Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View fragmentView = inflater.inflate(R.layout.fragment_articles_list, container, false);
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+							 Bundle savedInstanceState) {
+		View fragmentView = inflater.inflate(R.layout.fragment_articles_list, container, false);
 
-        // Initialize listView and it's adapter
+		// Initialize listView and it's adapter
 		listView = fragmentView.findViewById(R.id.articlesListView);
 		adapter = new ArticlesCursorAdapter(activityContext, null, 0);
 		listView.setAdapter(adapter);
@@ -86,28 +86,28 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 
 		// Start cursor loader
 		getLoaderManager().initLoader(LOADER_ID, null, this);
-        return fragmentView;
-    }
+		return fragmentView;
+	}
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        activityContext = context;
-    }
+	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+		activityContext = context;
+	}
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        activityContext = null;
-    }
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		activityContext = null;
+	}
 
-    @Override
+	@Override
 	public Loader<Cursor> onCreateLoader(int id, Bundle args) {
 
 		switch (id) {
 			case LOADER_ID:
 				return new CursorLoader(getContext(), FeedReaderContentProvider.ARTICLE_URI,
-						new String[] {ArticleTable.ID, ArticleTable.HEADING, ArticleTable.TEXT},
+						new String[]{ArticleTable.ID, ArticleTable.HEADING, ArticleTable.TEXT},
 						null, null, null);
 			default:
 				break;
@@ -160,9 +160,9 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 		@Override
 		protected String[] doInBackground(Void... voids) {
 			String[] urls;
-			try(Cursor cursor = activityContext.getContentResolver().query(FeedReaderContentProvider.FEED_URI,
+			try (Cursor cursor = activityContext.getContentResolver().query(FeedReaderContentProvider.FEED_URI,
 					new String[]{FeedTable.URL}, null, null, null)) {
-				if(cursor == null) {
+				if (cursor == null) {
 					throw new IndexOutOfBoundsException("Problem with cursor");
 				}
 
@@ -170,14 +170,14 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 				int counter = 0;
 
 				// Get all URLs
-				while(cursor.moveToNext()) {
+				while (cursor.moveToNext()) {
 					urls[counter] = cursor.getString(cursor.getColumnIndex(FeedTable.URL));
 					counter++;
 				}
 
 				return urls;
 
-			} catch(IndexOutOfBoundsException e) {
+			} catch (IndexOutOfBoundsException e) {
 				e.printStackTrace();
 			}
 

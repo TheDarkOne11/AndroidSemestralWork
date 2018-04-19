@@ -10,23 +10,18 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
-import com.google.code.rome.android.repackaged.com.sun.syndication.feed.atom.Feed;
-import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndEntry;
 import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndFeed;
 
 import java.util.ArrayList;
 
 import budikpet.cvut.cz.semestralwork.data.FeedDataLoader;
 import budikpet.cvut.cz.semestralwork.data.FeedReaderContentProvider;
-import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
 import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
 import budikpet.cvut.cz.semestralwork.data.feeds.FeedsCursorAdapter;
 
@@ -70,6 +65,7 @@ public class ActivityConfigureFeeds extends AppCompatActivity
 
 	/**
 	 * Creates new menu with share button.
+	 *
 	 * @param menu
 	 * @return
 	 */
@@ -83,12 +79,12 @@ public class ActivityConfigureFeeds extends AppCompatActivity
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case (R.id.itemAddFeed) :
+			case (R.id.itemAddFeed):
 				// Starts new addFeed dialog
 				DialogAddFeed dialogAddFeed = new DialogAddFeed();
 				dialogAddFeed.show(getSupportFragmentManager(), "DialogAddFeed");
 				return true;
-			case (android.R.id.home) :
+			case (android.R.id.home):
 				finish();
 				return true;
 		}
@@ -102,7 +98,7 @@ public class ActivityConfigureFeeds extends AppCompatActivity
 		switch (id) {
 			case LOADER_ID:
 				return new CursorLoader(this, FeedReaderContentProvider.FEED_URI,
-						new String[] {FeedTable.ID, FeedTable.HEADING, FeedTable.URL},
+						new String[]{FeedTable.ID, FeedTable.HEADING, FeedTable.URL},
 						null, null, null);
 			default:
 				break;
@@ -142,13 +138,14 @@ public class ActivityConfigureFeeds extends AppCompatActivity
 
 	/**
 	 * Gets new loaded feed data, stores it in database.
+	 *
 	 * @param feeds
 	 */
 	@Override
 	public void onPostExecute(ArrayList<SyndFeed> feeds) {
 		ContentValues cv = new ContentValues();
 
-		if(feeds == null) {
+		if (feeds == null) {
 			// URL didn't lead to valid RSS feed
 			cv.put(FeedTable.HEADING, getString(R.string.rssNotFound));
 			cv.put(FeedTable.URL, lastAddedUrl);

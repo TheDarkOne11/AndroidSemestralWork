@@ -1,11 +1,10 @@
 package budikpet.cvut.cz.semestralwork.data;
 
-import android.os.SystemClock;
-import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 
 import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndFeed;
 import com.google.code.rome.android.repackaged.com.sun.syndication.io.FeedException;
@@ -20,48 +19,50 @@ import java.util.ArrayList;
  * Retain fragment used for downloading feeds.
  */
 public class FeedDataLoader extends Fragment {
-    private LoaderAsyncTask task;
-    private TaskCallbacks callbacks;
-    private boolean running = false;
+	private LoaderAsyncTask task;
+	private TaskCallbacks callbacks;
+	private boolean running = false;
 
-    public interface TaskCallbacks {
-        void onPreExecute();
+	public interface TaskCallbacks {
+		void onPreExecute();
 
 		/**
 		 * Processes all downloaded feeds.
+		 *
 		 * @param feeds
 		 */
 		void onPostExecute(ArrayList<SyndFeed> feeds);
-    }
+	}
 
-    /**
-     * Starts getting information about the feed.
-     * @param url
-     */
-    public void execute(String... url) {
-        task = new LoaderAsyncTask();
-        task.execute(url);
-    }
+	/**
+	 * Starts getting information about the feed.
+	 *
+	 * @param url
+	 */
+	public void execute(String... url) {
+		task = new LoaderAsyncTask();
+		task.execute(url);
+	}
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
+	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
 
-        callbacks = (TaskCallbacks) context;
-    }
+		callbacks = (TaskCallbacks) context;
+	}
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
+	@Override
+	public void onDetach() {
+		super.onDetach();
 
-        callbacks = null;
-    }
+		callbacks = null;
+	}
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        this.setRetainInstance(true);
-    }
+	@Override
+	public void onCreate(@Nullable Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		this.setRetainInstance(true);
+	}
 
 	public boolean isRunning() {
 		return running;
@@ -69,52 +70,52 @@ public class FeedDataLoader extends Fragment {
 
 	private class LoaderAsyncTask extends AsyncTask<String, Integer, ArrayList<SyndFeed>> {
 
-        @Override
-        protected ArrayList<SyndFeed> doInBackground(String... urls) {
-        	// get URLs
+		@Override
+		protected ArrayList<SyndFeed> doInBackground(String... urls) {
+			// get URLs
 
 
 			// get Feeds
-        	ArrayList<SyndFeed> result = new ArrayList<>();
-            try {
-                SyndFeedInput input = new SyndFeedInput();
+			ArrayList<SyndFeed> result = new ArrayList<>();
+			try {
+				SyndFeedInput input = new SyndFeedInput();
 
-                for(String url : urls) {
+				for (String url : urls) {
 					result.add(input.build(new XmlReader(new URL(url))));
 				}
 
-            } catch (FeedException | IOException e) {
-                e.printStackTrace();
-            }
+			} catch (FeedException | IOException e) {
+				e.printStackTrace();
+			}
 
 //            SystemClock.sleep(5000);
 
-            // Send result to postExecute()
-            return result;
-        }
+			// Send result to postExecute()
+			return result;
+		}
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            running = true;
-            callbacks.onPreExecute();
-        }
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			running = true;
+			callbacks.onPreExecute();
+		}
 
-        @Override
-        protected void onPostExecute(ArrayList<SyndFeed> syndFeed) {
-            super.onPostExecute(syndFeed);
-            callbacks.onPostExecute(syndFeed);
-            running = false;
-        }
+		@Override
+		protected void onPostExecute(ArrayList<SyndFeed> syndFeed) {
+			super.onPostExecute(syndFeed);
+			callbacks.onPostExecute(syndFeed);
+			running = false;
+		}
 
-        @Override
-        protected void onProgressUpdate(Integer... values) {
-            super.onProgressUpdate(values);
-        }
+		@Override
+		protected void onProgressUpdate(Integer... values) {
+			super.onProgressUpdate(values);
+		}
 
-        @Override
-        protected void onCancelled() {
-            super.onCancelled();
-        }
-    }
+		@Override
+		protected void onCancelled() {
+			super.onCancelled();
+		}
+	}
 }

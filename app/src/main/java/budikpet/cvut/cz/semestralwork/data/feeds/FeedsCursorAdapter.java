@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.TextView;
 
-import budikpet.cvut.cz.semestralwork.ActivityConfigureFeeds;
 import budikpet.cvut.cz.semestralwork.R;
 
 /**
@@ -26,6 +25,7 @@ public class FeedsCursorAdapter extends CursorAdapter {
 
 	/**
 	 * Create view of the current row.
+	 *
 	 * @param context
 	 * @param cursor
 	 * @param parent
@@ -38,6 +38,7 @@ public class FeedsCursorAdapter extends CursorAdapter {
 
 	/**
 	 * Fill current row.
+	 *
 	 * @param view
 	 * @param context
 	 * @param cursor
@@ -46,7 +47,7 @@ public class FeedsCursorAdapter extends CursorAdapter {
 	public void bindView(View view, Context context, Cursor cursor) {
 		ViewHolder holder = (ViewHolder) view.getTag();
 
-		if(holder == null) {
+		if (holder == null) {
 			// Create view holder
 			holder = new ViewHolder();
 			holder.heading = view.findViewById(R.id.feedHeading);

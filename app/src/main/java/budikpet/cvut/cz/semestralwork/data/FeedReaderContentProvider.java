@@ -10,8 +10,6 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import com.google.code.rome.android.repackaged.com.sun.syndication.feed.atom.Feed;
-
 import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
 import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
 

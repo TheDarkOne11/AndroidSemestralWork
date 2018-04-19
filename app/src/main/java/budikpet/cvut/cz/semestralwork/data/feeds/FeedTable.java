@@ -36,7 +36,7 @@ public class FeedTable {
 		dropAndCreateTable(db);
 	}
 
-	private static void dropAndCreateTable(SQLiteDatabase db){
+	private static void dropAndCreateTable(SQLiteDatabase db) {
 		db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
 		onCreate(db);
 	}

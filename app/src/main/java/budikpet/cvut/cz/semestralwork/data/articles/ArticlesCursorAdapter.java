@@ -25,6 +25,7 @@ public class ArticlesCursorAdapter extends CursorAdapter {
 
 	/**
 	 * Create view of the current row.
+	 *
 	 * @param context
 	 * @param cursor
 	 * @param parent
@@ -37,6 +38,7 @@ public class ArticlesCursorAdapter extends CursorAdapter {
 
 	/**
 	 * Fill current row.
+	 *
 	 * @param view
 	 * @param context
 	 * @param cursor
@@ -45,7 +47,7 @@ public class ArticlesCursorAdapter extends CursorAdapter {
 	public void bindView(View view, Context context, Cursor cursor) {
 		ViewHolder holder = (ViewHolder) view.getTag();
 
-		if(holder == null) {
+		if (holder == null) {
 			// Create view holder
 			holder = new ViewHolder();
 			holder.heading = view.findViewById(R.id.articleHeading);

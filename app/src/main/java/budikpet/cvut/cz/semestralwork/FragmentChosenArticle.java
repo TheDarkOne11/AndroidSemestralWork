@@ -174,7 +174,7 @@ public class FragmentChosenArticle extends Fragment implements LoaderManager.Loa
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-			case (R.id.itemShareArticle) :
+			case (R.id.itemShareArticle):
 				share();
 				return true;
 		}
@@ -194,7 +194,7 @@ public class FragmentChosenArticle extends Fragment implements LoaderManager.Loa
 		shareIntent.putExtra(Intent.EXTRA_SUBJECT, String.format(getString(R.string.shareSubject),
 				heading.getText()));
 		shareIntent.putExtra(Intent.EXTRA_TEXT, String.format(getString(R.string.shareText),
-					url));
+				url));
 
 		startActivity(Intent.createChooser(shareIntent, getString(R.string.shareIntent)));
 	}
