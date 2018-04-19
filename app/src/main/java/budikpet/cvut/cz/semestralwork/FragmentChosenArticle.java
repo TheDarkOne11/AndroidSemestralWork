@@ -79,7 +79,9 @@ public class FragmentChosenArticle extends Fragment implements LoaderManager.Loa
 		link.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
+				Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+				intent.addCategory(Intent.CATEGORY_BROWSABLE);
+				startActivity(intent);
 			}
 		});
 
@@ -98,16 +100,6 @@ public class FragmentChosenArticle extends Fragment implements LoaderManager.Loa
 		this.data = data;
 		if (data != null && this.data.moveToFirst()) {
 			updateViewsWithContent(data);
-
-//			mainText.setOnClickListener(new View.OnClickListener() {
-//				@Override
-//				public void onClick(View v) {
-//					Intent intent = new Intent(Intent.ACTION_VIEW);
-//					intent.addCategory(Intent.CATEGORY_BROWSABLE);
-//					intent.setData(Uri.parse(data.getString(data.getColumnIndex(Contract.Entry.LINK))));
-//					startActivity(intent);
-//				}
-//			});
 		}
 	}
 
