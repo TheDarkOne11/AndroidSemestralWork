@@ -1,12 +1,16 @@
 package budikpet.cvut.cz.semestralwork.data;
 
 import android.content.ContentProvider;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.text.TextUtils;
+
+import com.google.code.rome.android.repackaged.com.sun.syndication.feed.atom.Feed;
 
 import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
 import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
@@ -48,6 +52,9 @@ public class FeedReaderContentProvider extends ContentProvider {
 		sURIMatcher.addURI(AUTHORITY, FeedTable.BASE_PATH + "/#", FEED_LIST);
 	}
 
+	SQLiteDatabase db;
+	ContentResolver contentResolver;
+
 	public FeedReaderContentProvider() {
 	}
 
@@ -75,7 +82,7 @@ public class FeedReaderContentProvider extends ContentProvider {
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
-		getContext().getContentResolver().notifyChange(uri, null);
+		contentResolver.notifyChange(uri, null);
 		return rowsDeleted;
 	}
 
@@ -99,7 +106,7 @@ public class FeedReaderContentProvider extends ContentProvider {
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
-		getContext().getContentResolver().notifyChange(uri, null);
+		contentResolver.notifyChange(uri, null);
 		return Uri.parse(uri + "/" + id);
 	}
 
@@ -107,6 +114,8 @@ public class FeedReaderContentProvider extends ContentProvider {
 	public boolean onCreate() {
 		// Init database
 		dbHelper = new DBHelper(getContext());
+		db = dbHelper.getWritableDatabase();
+		contentResolver = getContext().getContentResolver();
 
 		return false;
 	}
@@ -115,32 +124,41 @@ public class FeedReaderContentProvider extends ContentProvider {
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection,
 						String[] selectionArgs, String sortOrder) {
-		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
 
 		// Setup queryBuilder according to URI
 		int uriType = sURIMatcher.match(uri);
+		String tables;
 		switch (uriType) {
-			case ARTICLE_LIST:
-				queryBuilder.setTables(ArticleTable.TABLE_NAME);
+			case ARTICLE_LIST: {
+				tables = ArticleTable.TABLE_NAME;
 				break;
-			case ARTICLE:
-				queryBuilder.setTables(ArticleTable.TABLE_NAME);
-				queryBuilder.appendWhere(ArticleTable.ID + "=" + uri.getLastPathSegment());
+			}
+			case ARTICLE: {
+				tables = ArticleTable.TABLE_NAME;
+				String idSelection = ArticleTable.ID + "=" + uri.getLastPathSegment();
+				selection = TextUtils.isEmpty(selection) ? idSelection :
+						"(" + selection + ") AND " + idSelection;
 				break;
-			case FEED_LIST:
-				queryBuilder.setTables(FeedTable.TABLE_NAME);
+			}
+			case FEED_LIST: {
+				tables = FeedTable.TABLE_NAME;
 				break;
-			case FEED:
-				queryBuilder.setTables(FeedTable.TABLE_NAME);
-				queryBuilder.appendWhere(FeedTable.ID + "=" + uri.getLastPathSegment());
+			}
+			case FEED: {
+				tables = FeedTable.TABLE_NAME;
+				String idSelection = FeedTable.ID + "=" + uri.getLastPathSegment();
+				selection = TextUtils.isEmpty(selection) ? idSelection :
+						"(" + selection + ") AND " + idSelection;
 				break;
+			}
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
 
-		SQLiteDatabase db = dbHelper.getWritableDatabase();
+		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+		queryBuilder.setTables(tables);
 		Cursor cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
-		cursor.setNotificationUri(getContext().getContentResolver(), uri);
+		cursor.setNotificationUri(contentResolver, uri);
 
 		return cursor;
 	}

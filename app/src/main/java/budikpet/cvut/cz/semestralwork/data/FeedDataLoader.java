@@ -71,7 +71,11 @@ public class FeedDataLoader extends Fragment {
 
         @Override
         protected ArrayList<SyndFeed> doInBackground(String... urls) {
-			ArrayList<SyndFeed> result = new ArrayList<>();
+        	// get URLs
+
+
+			// get Feeds
+        	ArrayList<SyndFeed> result = new ArrayList<>();
             try {
                 SyndFeedInput input = new SyndFeedInput();
 
@@ -99,8 +103,8 @@ public class FeedDataLoader extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<SyndFeed> syndFeed) {
             super.onPostExecute(syndFeed);
-            running = false;
             callbacks.onPostExecute(syndFeed);
+            running = false;
         }
 
         @Override
