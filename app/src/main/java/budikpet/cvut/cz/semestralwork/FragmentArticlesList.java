@@ -9,7 +9,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -45,7 +44,8 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 	private ListView listView;
 	private ArticlesCursorAdapter adapter;
 	private Context activityContext;
-	private MenuItem itemRefreshIcon, itemRefreshProgress;
+	private MenuItem itemRefresh;
+	private View actionProgress;
 	private Synchronize synchronize;
 
 	public FragmentArticlesList() {
@@ -67,6 +67,10 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
 		setRetainInstance(true);
+
+		// Get progress bar view
+		actionProgress = LayoutInflater.from(getActivity()).inflate(R.layout.action_view_progress,
+				null);
 	}
 
 	@Override
@@ -153,7 +157,7 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 	@Override
 	public boolean onOptionsItemSelected(final MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.itemRefreshIcon:
+			case R.id.itemRefresh:
 				synchronize = new Synchronize();
 				synchronize.execute();
 				return true;
@@ -165,8 +169,7 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.fragment_articles_list_menu, menu);
-		itemRefreshIcon = menu.findItem(R.id.itemRefreshIcon);
-		itemRefreshProgress = menu.findItem(R.id.itemRefreshProgress);
+		itemRefresh = menu.findItem(R.id.itemRefresh);
 
 		// Refreshing
 		if(synchronize != null) {
@@ -176,13 +179,16 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 		}
 	}
 
-	private void setRefreshing(boolean refreshing) {
-		if (itemRefreshIcon == null || itemRefreshProgress == null) {
+	private void setRefreshing(boolean isRefreshing) {
+		if (itemRefresh == null) {
 			return;
 		}
 
-		itemRefreshIcon.setVisible(!refreshing);
-		itemRefreshProgress.setVisible(refreshing);
+		if(isRefreshing) {
+			itemRefresh.setActionView(actionProgress);
+		} else {
+			itemRefresh.setActionView(null);
+		}
 	}
 
 	/**
@@ -211,7 +217,8 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 				e.printStackTrace();
 			}
 
-			SystemClock.sleep(5000);
+			// TODO Testing only
+//			SystemClock.sleep(5000);
 
 			return null;
 		}
@@ -219,12 +226,14 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 		@Override
 		protected void onPreExecute() {
 			running = true;
+			setRefreshing(true);
 			Log.i("SYNC", "PreExecute");
 		}
 
 		@Override
 		protected void onPostExecute(Void aVoid) {
 			running = false;
+			setRefreshing(false);
 			Log.i("SYNC", "PostExecute");
 		}
 
