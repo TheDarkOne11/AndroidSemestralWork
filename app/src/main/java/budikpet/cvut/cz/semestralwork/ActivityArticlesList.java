@@ -22,11 +22,7 @@ import budikpet.cvut.cz.semestralwork.data.FeedDataLoader;
 import budikpet.cvut.cz.semestralwork.data.FeedReaderContentProvider;
 import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
 
-public class ActivityArticlesList extends AppCompatActivity
-		implements FeedDataLoader.TaskCallbacks {
-	private FeedDataLoader feedDataLoader;
-	private MenuItem itemRefreshProgress, itemRefreshIcon;
-
+public class ActivityArticlesList extends AppCompatActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -35,14 +31,6 @@ public class ActivityArticlesList extends AppCompatActivity
 
 		if (savedInstanceState == null) {
 			fm.beginTransaction().add(R.id.newsListContainer, FragmentArticlesList.newInstance()).commit();
-		}
-
-		// Add loader fragment if it doesn't exist
-		String tag = "feedDataLoader";
-		feedDataLoader = (FeedDataLoader) fm.findFragmentByTag(tag);
-		if (feedDataLoader == null) {
-			feedDataLoader = new FeedDataLoader();
-			fm.beginTransaction().add(feedDataLoader, tag).commit();
 		}
 	}
 
@@ -55,18 +43,8 @@ public class ActivityArticlesList extends AppCompatActivity
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.news_list_menu, menu);
+		inflater.inflate(R.menu.activity_articles_list_menu, menu);
 		return true;
-	}
-
-	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
-		// Store instance of the menu item containing progress
-		itemRefreshProgress = menu.findItem(R.id.itemSyncProgress);
-		itemRefreshIcon = menu.findItem(R.id.itemSyncIcon);
-
-		setRefreshing(feedDataLoader.isRunning());
-		return super.onPrepareOptionsMenu(menu);
 	}
 
 	@Override
@@ -90,66 +68,46 @@ public class ActivityArticlesList extends AppCompatActivity
 		return super.onOptionsItemSelected(item);
 	}
 
-	private void setRefreshing(boolean refreshing) {
-		if (itemRefreshIcon == null || itemRefreshProgress == null) {
-			return;
-		}
-
-		itemRefreshIcon.setVisible(!refreshing);
-		itemRefreshProgress.setVisible(refreshing);
-	}
-
-	@Override
-	public void onPreExecute() {
-		setRefreshing(true);
-	}
-
-	/**
-	 * Gets new loaded feed data, stores it in database.
-	 *
-	 * @param feeds
-	 */
-	@Override
-	public void onPostExecute(ArrayList<SyndFeed> feeds) {
-		// Extract all entries
-		ArrayList<SyndEntry> entries = new ArrayList<>();
-		for (SyndFeed currFeed : feeds) {
-			List<SyndEntry> currEntries = currFeed.getEntries();
-			entries.addAll(currEntries);
-		}
-
-		// Sort entries by date
-		Collections.sort(entries, new Comparator<SyndEntry>() {
-			@Override
-			public int compare(SyndEntry o1, SyndEntry o2) {
-				return (int) (o2.getPublishedDate().getTime() - o1.getPublishedDate().getTime());
-			}
-		});
-
-		// Clear database
-		getContentResolver().delete(FeedReaderContentProvider.ARTICLE_URI, null, null);
-
-		// Store entries in the database.
-		ContentValues cv = new ContentValues();
-		for (Object curr : entries) {
-			SyndEntry entry = (SyndEntry) curr;
-
-			// Set content values
-			cv.put(ArticleTable.HEADING, entry.getTitle());
-			cv.put(ArticleTable.TEXT, entry.getDescription().getValue());
-			cv.put(ArticleTable.URL, entry.getLink());
-			cv.put(ArticleTable.TIME_CREATED, entry.getPublishedDate().getTime());
-
-			String author = entry.getAuthor();
-			if (author == null || author.equals("")) {
-				author = "UNKNOWN_AUTHOR";
-			}
-			cv.put(ArticleTable.AUTHOR, author);
-
-			// Save it to database
-			getContentResolver().insert(FeedReaderContentProvider.ARTICLE_URI, cv);
-		}
-
-		setRefreshing(false);
-	}
+//	public void onPostExecute(ArrayList<SyndFeed> feeds) {
+//		// Extract all entries
+//		ArrayList<SyndEntry> entries = new ArrayList<>();
+//		for (SyndFeed currFeed : feeds) {
+//			List<SyndEntry> currEntries = currFeed.getEntries();
+//			entries.addAll(currEntries);
+//		}
+//
+//		// Sort entries by date
+//		Collections.sort(entries, new Comparator<SyndEntry>() {
+//			@Override
+//			public int compare(SyndEntry o1, SyndEntry o2) {
+//				return (int) (o2.getPublishedDate().getTime() - o1.getPublishedDate().getTime());
+//			}
+//		});
+//
+//		// Clear database
+//		getContentResolver().delete(FeedReaderContentProvider.ARTICLE_URI, null, null);
+//
+//		// Store entries in the database.
+//		ContentValues cv = new ContentValues();
+//		for (Object curr : entries) {
+//			SyndEntry entry = (SyndEntry) curr;
+//
+//			// Set content values
+//			cv.put(ArticleTable.HEADING, entry.getTitle());
+//			cv.put(ArticleTable.TEXT, entry.getDescription().getValue());
+//			cv.put(ArticleTable.URL, entry.getLink());
+//			cv.put(ArticleTable.TIME_CREATED, entry.getPublishedDate().getTime());
+//
+//			String author = entry.getAuthor();
+//			if (author == null || author.equals("")) {
+//				author = "UNKNOWN_AUTHOR";
+//			}
+//			cv.put(ArticleTable.AUTHOR, author);
+//
+//			// Save it to database
+//			getContentResolver().insert(FeedReaderContentProvider.ARTICLE_URI, cv);
+//		}
+//
+//		setRefreshing(false);
+//	}
 }

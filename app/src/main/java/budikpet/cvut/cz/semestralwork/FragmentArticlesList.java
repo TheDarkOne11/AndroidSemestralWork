@@ -1,24 +1,39 @@
 package budikpet.cvut.cz.semestralwork;
 
 import android.content.ContentUris;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
+
+import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndEntry;
+import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndFeed;
+import com.google.code.rome.android.repackaged.com.sun.syndication.io.FeedException;
+import com.google.code.rome.android.repackaged.com.sun.syndication.io.SyndFeedInput;
+import com.google.code.rome.android.repackaged.com.sun.syndication.io.XmlReader;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.ArrayList;
 
 import budikpet.cvut.cz.semestralwork.data.FeedDataLoader;
 import budikpet.cvut.cz.semestralwork.data.FeedReaderContentProvider;
@@ -31,7 +46,8 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 	private ListView listView;
 	private ArticlesCursorAdapter adapter;
 	private Context activityContext;
-	private FeedDataLoader feedDataLoader;
+	private MenuItem itemRefreshIcon, itemRefreshProgress;
+	private Synchronize synchronize;
 
 	public FragmentArticlesList() {
 		// Required empty public constructor
@@ -51,17 +67,22 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
-
-		// Add loader fragment if it doesn't exist
-		FragmentManager fm = getActivity().getSupportFragmentManager();
-		String tag = "feedDataLoader";
-		feedDataLoader = (FeedDataLoader) fm.findFragmentByTag(tag);
-		if (feedDataLoader == null) {
-			feedDataLoader = new FeedDataLoader();
-			fm.beginTransaction().add(feedDataLoader, tag).commit();
-		}
+		setRetainInstance(true);
 	}
 
+	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+		activityContext = context;
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		activityContext = null;
+	}
+
+	//<editor-fold desc="Loader&View">
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 							 Bundle savedInstanceState) {
@@ -87,18 +108,6 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 		// Start cursor loader
 		getLoaderManager().initLoader(LOADER_ID, null, this);
 		return fragmentView;
-	}
-
-	@Override
-	public void onAttach(Context context) {
-		super.onAttach(context);
-		activityContext = context;
-	}
-
-	@Override
-	public void onDetach() {
-		super.onDetach();
-		activityContext = null;
 	}
 
 	@Override
@@ -140,56 +149,114 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 				break;
 		}
 	}
+	//</editor-fold>
 
 	@Override
 	public boolean onOptionsItemSelected(final MenuItem item) {
 		switch (item.getItemId()) {
-			case R.id.itemSyncIcon:
-				new Synchronize().execute();
+			case R.id.itemRefreshIcon:
+				synchronize = new Synchronize();
+				synchronize.execute();
 				return true;
 		}
 
 		return super.onOptionsItemSelected(item);
 	}
 
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.fragment_articles_list_menu, menu);
+		itemRefreshIcon = menu.findItem(R.id.itemRefreshIcon);
+		itemRefreshProgress = menu.findItem(R.id.itemRefreshProgress);
+
+		// Refreshing
+		if(synchronize != null) {
+			setRefreshing(synchronize.isRunning());
+		} else {
+			setRefreshing(false);
+		}
+	}
+
+	private void setRefreshing(boolean refreshing) {
+		if (itemRefreshIcon == null || itemRefreshProgress == null) {
+			return;
+		}
+
+		itemRefreshIcon.setVisible(!refreshing);
+		itemRefreshProgress.setVisible(refreshing);
+	}
+
 	/**
 	 * Used for getting RSS URLs asynchronously.
 	 */
-	private class Synchronize extends AsyncTask<Void, Void, String[]> {
+	private class Synchronize extends AsyncTask<Void, Void, Void> {
+		private boolean running;
 
 		@Override
-		protected String[] doInBackground(Void... voids) {
-			String[] urls;
+		protected Void doInBackground(Void... voids) {
 			try (Cursor cursor = activityContext.getContentResolver().query(FeedReaderContentProvider.FEED_URI,
 					new String[]{FeedTable.URL}, null, null, null)) {
 				if (cursor == null) {
 					throw new IndexOutOfBoundsException("Problem with cursor");
 				}
 
-				urls = new String[cursor.getCount()];
-				int counter = 0;
-
-				// Get all URLs
+				// Go through all URLs
 				while (cursor.moveToNext()) {
-					urls[counter] = cursor.getString(cursor.getColumnIndex(FeedTable.URL));
-					counter++;
+					String currUrl = cursor.getString(cursor.getColumnIndex(FeedTable.URL));
+					processFeed(currUrl);
 				}
 
-				return urls;
-
-			} catch (IndexOutOfBoundsException e) {
+			} catch (IndexOutOfBoundsException | FeedException | IOException e) {
+				Log.e("FEED_UPDATE", "Could not update feed");
 				e.printStackTrace();
 			}
+
+			SystemClock.sleep(5000);
 
 			return null;
 		}
 
 		@Override
-		protected void onPostExecute(String[] strings) {
-			super.onPostExecute(strings);
+		protected void onPreExecute() {
+			running = true;
+			Log.i("SYNC", "PreExecute");
+		}
 
-			// Find feeds
-			feedDataLoader.execute(strings);
+		@Override
+		protected void onPostExecute(Void aVoid) {
+			running = false;
+			Log.i("SYNC", "PostExecute");
+		}
+
+		private void processFeed(String url) throws IOException, FeedException {
+			SyndFeedInput input = new SyndFeedInput();
+			URL feedUrl = new URL(url);
+			SyndFeed feed = input.build(new InputStreamReader(feedUrl.openStream()));
+
+			// Save entries of current feed
+			ContentValues cv = new ContentValues();
+			for (Object curr : feed.getEntries()) {
+				SyndEntry entry = (SyndEntry) curr;
+
+				// Set content values
+				cv.put(ArticleTable.HEADING, entry.getTitle());
+				cv.put(ArticleTable.TEXT, entry.getDescription().getValue());
+				cv.put(ArticleTable.URL, entry.getLink());
+				cv.put(ArticleTable.TIME_CREATED, entry.getPublishedDate().getTime());
+
+				String author = entry.getAuthor();
+				if (author == null || author.equals("")) {
+					author = "UNKNOWN_AUTHOR";
+				}
+				cv.put(ArticleTable.AUTHOR, author);
+
+				// Save it to database
+				getActivity().getContentResolver().insert(FeedReaderContentProvider.ARTICLE_URI, cv);
+			}
+		}
+
+		public boolean isRunning() {
+			return running;
 		}
 	}
 }
