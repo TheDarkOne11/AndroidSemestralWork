@@ -2,6 +2,7 @@ package budikpet.cvut.cz.semestralwork.data;
 
 import android.content.ContentProvider;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -125,25 +126,25 @@ public class FeedReaderContentProvider extends ContentProvider {
 
 		// Setup queryBuilder according to URI
 		int uriType = sURIMatcher.match(uri);
-		String tables;
+		String table;
 		switch (uriType) {
 			case ARTICLE_LIST: {
-				tables = ArticleTable.TABLE_NAME;
+				table = ArticleTable.TABLE_NAME;
 				break;
 			}
 			case ARTICLE: {
-				tables = ArticleTable.TABLE_NAME;
+				table = ArticleTable.TABLE_NAME;
 				String idSelection = ArticleTable.ID + "=" + uri.getLastPathSegment();
 				selection = TextUtils.isEmpty(selection) ? idSelection :
 						"(" + selection + ") AND " + idSelection;
 				break;
 			}
 			case FEED_LIST: {
-				tables = FeedTable.TABLE_NAME;
+				table = FeedTable.TABLE_NAME;
 				break;
 			}
 			case FEED: {
-				tables = FeedTable.TABLE_NAME;
+				table = FeedTable.TABLE_NAME;
 				String idSelection = FeedTable.ID + "=" + uri.getLastPathSegment();
 				selection = TextUtils.isEmpty(selection) ? idSelection :
 						"(" + selection + ") AND " + idSelection;
@@ -154,7 +155,7 @@ public class FeedReaderContentProvider extends ContentProvider {
 		}
 
 		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-		queryBuilder.setTables(tables);
+		queryBuilder.setTables(table);
 		Cursor cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
 		cursor.setNotificationUri(contentResolver, uri);
 
@@ -164,7 +165,42 @@ public class FeedReaderContentProvider extends ContentProvider {
 	@Override
 	public int update(Uri uri, ContentValues values, String selection,
 					  String[] selectionArgs) {
-		return 0;
+		String table;
+
+		switch (sURIMatcher.match(uri)) {
+			case ARTICLE_LIST: {
+				table = ArticleTable.TABLE_NAME;
+				break;
+			}
+			case ARTICLE: {
+				table = ArticleTable.TABLE_NAME;
+				String idSelection = ArticleTable.ID + "=" + uri.getLastPathSegment();
+				selection = TextUtils.isEmpty(selection) ? idSelection :
+						"(" + selection + ") AND " + idSelection;
+				break;
+			}
+			case FEED_LIST: {
+				table = FeedTable.TABLE_NAME;
+				break;
+			}
+			case FEED: {
+				table = FeedTable.TABLE_NAME;
+				String idSelection = FeedTable.ID + "=" + uri.getLastPathSegment();
+				selection = TextUtils.isEmpty(selection) ? idSelection :
+						"(" + selection + ") AND " + idSelection;
+				break;
+			}
+			default:
+				throw new IllegalArgumentException("Unknown URI: " + uri);
+		}
+
+		long updatedRows = db.update(table, values, selection, selectionArgs);
+		if (updatedRows > 0) {
+			contentResolver.notifyChange(uri, null);
+			return (int) updatedRows;
+		} else {
+			return 0;
+		}
 	}
 
 }
