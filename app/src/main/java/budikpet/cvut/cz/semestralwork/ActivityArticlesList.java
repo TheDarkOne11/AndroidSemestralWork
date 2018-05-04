@@ -1,6 +1,5 @@
 package budikpet.cvut.cz.semestralwork;
 
-import android.content.ContentValues;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -9,18 +8,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
-import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndEntry;
-import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndFeed;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
-import budikpet.cvut.cz.semestralwork.data.FeedDataLoader;
-import budikpet.cvut.cz.semestralwork.data.FeedReaderContentProvider;
-import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
 
 public class ActivityArticlesList extends AppCompatActivity {
 	@Override

@@ -2,6 +2,8 @@ package budikpet.cvut.cz.semestralwork;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -10,25 +12,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
+import budikpet.cvut.cz.semestralwork.data.FeedReaderContentProvider;
+import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
+
 public class DialogAddFeed extends AppCompatDialogFragment {
-	private InteractionListener listener;
-
-	@Override
-	public void onAttach(Context context) {
-		super.onAttach(context);
-		if (context instanceof InteractionListener) {
-			listener = (InteractionListener) context;
-		} else {
-			throw new RuntimeException(context.toString()
-					+ " must implement InteractionListener");
-		}
-	}
-
-	@Override
-	public void onDetach() {
-		super.onDetach();
-		listener = null;
-	}
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -42,7 +29,11 @@ public class DialogAddFeed extends AppCompatDialogFragment {
 				.setPositiveButton(R.string.dialogAddFeed, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						listener.saveFeed(urlEditText.getText().toString());
+						// TODO Use feed loading service to add new feed
+						ContentValues cv = new ContentValues();
+						cv.put(FeedTable.URL, urlEditText.getText().toString());
+						cv.put(FeedTable.HEADING, "DUMMY_HEADING");
+						getActivity().getContentResolver().insert(FeedReaderContentProvider.FEED_URI, cv);
 					}
 				})
 				.setNegativeButton(R.string.dialogButtonCancel, new DialogInterface.OnClickListener() {
@@ -54,9 +45,5 @@ public class DialogAddFeed extends AppCompatDialogFragment {
 
 
 		return builder.create();
-	}
-
-	public interface InteractionListener {
-		void saveFeed(String url);
 	}
 }

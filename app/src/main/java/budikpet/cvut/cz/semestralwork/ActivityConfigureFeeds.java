@@ -1,6 +1,5 @@
 package budikpet.cvut.cz.semestralwork;
 
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -16,20 +15,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
-import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndFeed;
-
-import java.util.ArrayList;
-
-import budikpet.cvut.cz.semestralwork.data.FeedDataLoader;
 import budikpet.cvut.cz.semestralwork.data.FeedReaderContentProvider;
 import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
 import budikpet.cvut.cz.semestralwork.data.feeds.FeedsCursorAdapter;
 
 public class ActivityConfigureFeeds extends AppCompatActivity
-		implements FeedDataLoader.TaskCallbacks, LoaderCallbacks<Cursor>,
-		DialogAddFeed.InteractionListener {
+		implements LoaderCallbacks<Cursor> {
 	private final int LOADER_ID = 5;
-	private FeedDataLoader feedDataLoader;
 	private ListView listView;
 	private FeedsCursorAdapter adapter;
 	private String lastAddedUrl;
@@ -53,14 +45,6 @@ public class ActivityConfigureFeeds extends AppCompatActivity
 
 		// Start cursor loader
 		getSupportLoaderManager().initLoader(LOADER_ID, null, this);
-
-		// Add loader fragment if it doesn't exist
-		String tag = "feedDataLoader";
-		feedDataLoader = (FeedDataLoader) fm.findFragmentByTag(tag);
-		if (feedDataLoader == null) {
-			feedDataLoader = new FeedDataLoader();
-			fm.beginTransaction().add(feedDataLoader, tag).commit();
-		}
 	}
 
 	/**
@@ -132,54 +116,6 @@ public class ActivityConfigureFeeds extends AppCompatActivity
 		}
 	}
 
-	@Override
-	public void onPreExecute() {
-	}
-
-	/**
-	 * Gets new loaded feed data, stores it in database.
-	 *
-	 * @param feeds
-	 */
-	@Override
-	public void onPostExecute(ArrayList<SyndFeed> feeds) {
-		ContentValues cv = new ContentValues();
-
-		if (feeds == null) {
-			// URL didn't lead to valid RSS feed
-			cv.put(FeedTable.HEADING, getString(R.string.rssNotFound));
-			cv.put(FeedTable.URL, lastAddedUrl);
-			return;
-		}
-
-		// Save feed
-		SyndFeed feed = feeds.get(0);
-		cv.put(FeedTable.HEADING, feed.getTitle());
-		cv.put(FeedTable.URL, lastAddedUrl);
-		getContentResolver().insert(FeedReaderContentProvider.FEED_URI, cv);
-
-		// Save entries
-		// TODO Save entries of the new feed
-//		for(Object curr : feed.getEntries()) {
-//			SyndEntry entry = (SyndEntry) curr;
-//
-//			// Set content values
-//			cv.put(ArticleTable.HEADING, entry.getTitle());
-//			cv.put(ArticleTable.TEXT, entry.getDescription().getValue());
-//			cv.put(ArticleTable.URL, entry.getLink());
-//			cv.put(ArticleTable.TIME_CREATED, entry.getPublishedDate().getTime());
-//
-//			String author = entry.getAuthor();
-//			if(author == null || author.equals("")) {
-//				author = "UNKNOWN_AUTHOR";
-//			}
-//			cv.put(ArticleTable.AUTHOR, author);
-//
-//			// Save it to database
-//			getContentResolver().insert(FeedReaderContentProvider.ARTICLE_URI, cv);
-//		}
-	}
-
 	public void removeFeed(View view) {
 		// Starts new dialog
 		final int feedId = (int) view.getTag(R.id.keyFeedId);
@@ -206,11 +142,5 @@ public class ActivityConfigureFeeds extends AppCompatActivity
 
 		AlertDialog dialog = builder.create();
 		dialog.show();
-	}
-
-	@Override
-	public void saveFeed(String url) {
-		lastAddedUrl = url;
-		feedDataLoader.execute(url);
 	}
 }
