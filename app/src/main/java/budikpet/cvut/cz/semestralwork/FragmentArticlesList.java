@@ -196,6 +196,7 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 	 */
 	private class Synchronize extends AsyncTask<Void, Void, Void> {
 		private boolean running;
+		long numOfDays = 30;
 
 		@Override
 		protected Void doInBackground(Void... voids) {
@@ -210,6 +211,8 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 					String currUrl = cursor.getString(cursor.getColumnIndex(FeedTable.URL));
 					processFeed(currUrl);
 				}
+
+				removeOldEntries();
 
 			} catch (IndexOutOfBoundsException | FeedException | IOException e) {
 				Log.e("FEED_UPDATE", "Could not update feed");
@@ -241,40 +244,82 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 			SyndFeedInput input = new SyndFeedInput();
 			URL feedUrl = new URL(url);
 			SyndFeed feed = input.build(new InputStreamReader(feedUrl.openStream()));
-			ContentResolver resolver = getContext().getContentResolver();
 
 			// Save entries of current feed
 			for (Object curr : feed.getEntries()) {
 				SyndEntry entry = (SyndEntry) curr;
 
-				// Get content values of current entry
-				ContentValues cv = getContentValues(entry);
-
-				// Entries can be identified by their link
-				String selection = ArticleTable.URL + "=?";
-				String[] selectionArgs = {entry.getLink()};
-				try(
-						Cursor savedEntry = resolver.query(FeedReaderContentProvider.ARTICLE_URI, null,
-										selection, selectionArgs, null)
-				) {
-					if (savedEntry != null && savedEntry.getCount() > 0) {
-						// Entry already exists, update it
-						int updated = resolver.update(FeedReaderContentProvider.ARTICLE_URI, cv, selection,
-								selectionArgs);
-						if (updated == 0) {
-							throw new IOException("Can't update the entry: " + entry.getLink());
-						}
-					} else {
-						// Insert new entry
-						Uri entryUri = resolver.insert(FeedReaderContentProvider.ARTICLE_URI, cv);
-						if (entryUri == null) {
-							throw new IOException("Can't save the entry: " + entry.getLink());
-						}
-					}
-				}
+				saveEntry(entry);
 			}
 		}
 
+		/**
+		 * Removes all entries that are older than certain time frame.
+		 */
+		private void removeOldEntries() {
+
+
+			String selection = ArticleTable.TIME_CREATED + " < ?";
+			String[] selectionArgs = {String.valueOf(getTime())};
+			getActivity().getContentResolver().delete(FeedReaderContentProvider.ARTICLE_URI,
+					selection, selectionArgs);
+		}
+
+		/**
+		 *
+		 * @return time in millis. Entries older than this time should be deleted.
+		 */
+		private long getTime() {
+			return System.currentTimeMillis() - numOfDays * 24 * 60 * 60 * 1000;
+		}
+
+		/**
+		 * Persists entry information.
+		 * @param entry is the article to be persisted.
+		 */
+		private void saveEntry(SyndEntry entry) {
+			// Get content values of current entry
+			ContentValues cv = getContentValues(entry);
+			ContentResolver resolver = getContext().getContentResolver();
+
+			// Check if entry isn`t too old
+			if(entry.getPublishedDate().getTime() < getTime()) {
+				return;
+			}
+
+			// Entries can be identified by their link
+			String selection = ArticleTable.URL + "=?";
+			String[] selectionArgs = {entry.getLink()};
+			try(
+					Cursor savedEntry = resolver.query(FeedReaderContentProvider.ARTICLE_URI, null,
+							selection, selectionArgs, null)
+			) {
+				// Save or update entry
+				if (savedEntry != null && savedEntry.getCount() > 0) {
+					// Entry already exists, update it
+					int updated = resolver.update(FeedReaderContentProvider.ARTICLE_URI, cv, selection,
+							selectionArgs);
+					if (updated == 0) {
+						throw new IOException("Can't update the entry: " + entry.getLink());
+					}
+				} else {
+					// Insert new entry
+					Uri entryUri = resolver.insert(FeedReaderContentProvider.ARTICLE_URI, cv);
+					if (entryUri == null) {
+						throw new IOException("Can't save the entry: " + entry.getLink());
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				Log.e("ADD_FEED", "Error occured when adding data from feed: " + e.getMessage());
+			}
+		}
+
+		/**
+		 * Fills ContentValues using entry data.
+		 * @param entry data
+		 * @return ContentValues from data.
+		 */
 		private ContentValues getContentValues(@NonNull SyndEntry entry) {
 			ContentValues cv = new ContentValues();
 
