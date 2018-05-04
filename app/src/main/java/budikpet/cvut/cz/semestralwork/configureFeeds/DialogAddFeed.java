@@ -1,10 +1,8 @@
-package budikpet.cvut.cz.semestralwork;
+package budikpet.cvut.cz.semestralwork.configureFeeds;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.ContentResolver;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDialogFragment;
@@ -12,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 
+import budikpet.cvut.cz.semestralwork.R;
 import budikpet.cvut.cz.semestralwork.data.FeedReaderContentProvider;
 import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
 

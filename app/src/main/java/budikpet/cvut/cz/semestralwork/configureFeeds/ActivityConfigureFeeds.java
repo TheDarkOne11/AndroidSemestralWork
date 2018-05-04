@@ -1,4 +1,4 @@
-package budikpet.cvut.cz.semestralwork;
+package budikpet.cvut.cz.semestralwork.configureFeeds;
 
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
+import budikpet.cvut.cz.semestralwork.R;
 import budikpet.cvut.cz.semestralwork.data.FeedReaderContentProvider;
 import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
 import budikpet.cvut.cz.semestralwork.data.feeds.FeedsCursorAdapter;

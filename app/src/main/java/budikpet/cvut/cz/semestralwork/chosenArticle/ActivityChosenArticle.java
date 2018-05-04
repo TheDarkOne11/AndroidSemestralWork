@@ -1,4 +1,4 @@
-package budikpet.cvut.cz.semestralwork;
+package budikpet.cvut.cz.semestralwork.chosenArticle;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -6,6 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import budikpet.cvut.cz.semestralwork.R;
+import budikpet.cvut.cz.semestralwork.articlesList.FragmentChosenArticle;
 
 public class ActivityChosenArticle extends AppCompatActivity {
 	private int articleId;

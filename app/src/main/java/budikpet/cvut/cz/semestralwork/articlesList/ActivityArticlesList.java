@@ -1,4 +1,4 @@
-package budikpet.cvut.cz.semestralwork;
+package budikpet.cvut.cz.semestralwork.articlesList;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +8,10 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+
+import budikpet.cvut.cz.semestralwork.R;
+import budikpet.cvut.cz.semestralwork.chosenArticle.FragmentArticlesList;
+import budikpet.cvut.cz.semestralwork.configureFeeds.ActivityConfigureFeeds;
 
 public class ActivityArticlesList extends AppCompatActivity {
 	@Override

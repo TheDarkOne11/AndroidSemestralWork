@@ -1,4 +1,4 @@
-package budikpet.cvut.cz.semestralwork;
+package budikpet.cvut.cz.semestralwork.chosenArticle;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -34,6 +34,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 
+import budikpet.cvut.cz.semestralwork.R;
 import budikpet.cvut.cz.semestralwork.data.FeedReaderContentProvider;
 import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
 import budikpet.cvut.cz.semestralwork.data.articles.ArticlesCursorAdapter;
@@ -172,7 +173,7 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 		itemRefresh = menu.findItem(R.id.itemRefresh);
 
 		// Refreshing
-		if(synchronize != null) {
+		if (synchronize != null) {
 			setRefreshing(synchronize.isRunning());
 		} else {
 			setRefreshing(false);
@@ -184,7 +185,7 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 			return;
 		}
 
-		if(isRefreshing) {
+		if (isRefreshing) {
 			itemRefresh.setActionView(actionProgress);
 		} else {
 			itemRefresh.setActionView(null);
@@ -266,7 +267,6 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 		}
 
 		/**
-		 *
 		 * @return time in millis. Entries older than this time should be deleted.
 		 */
 		private long getTime() {
@@ -275,6 +275,7 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 
 		/**
 		 * Persists entry information.
+		 *
 		 * @param entry is the article to be persisted.
 		 */
 		private void saveEntry(SyndEntry entry) {
@@ -283,14 +284,14 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 			ContentResolver resolver = getContext().getContentResolver();
 
 			// Check if entry isn`t too old
-			if(entry.getPublishedDate().getTime() < getTime()) {
+			if (entry.getPublishedDate().getTime() < getTime()) {
 				return;
 			}
 
 			// Entries can be identified by their link
 			String selection = ArticleTable.URL + "=?";
 			String[] selectionArgs = {entry.getLink()};
-			try(
+			try (
 					Cursor savedEntry = resolver.query(FeedReaderContentProvider.ARTICLE_URI, null,
 							selection, selectionArgs, null)
 			) {
@@ -317,6 +318,7 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 
 		/**
 		 * Fills ContentValues using entry data.
+		 *
 		 * @param entry data
 		 * @return ContentValues from data.
 		 */
