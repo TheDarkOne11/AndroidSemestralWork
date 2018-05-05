@@ -1,4 +1,4 @@
-package budikpet.cvut.cz.semestralwork.data.Config;
+package budikpet.cvut.cz.semestralwork.data.config;
 
 import android.database.sqlite.SQLiteDatabase;
 
@@ -8,12 +8,15 @@ import android.database.sqlite.SQLiteDatabase;
  */
 public class ConfigTable {
 	public static final String TABLE_NAME = "ConfigTable";
-	public static final String BASE_PATH = "feeds";
+	public static final String BASE_PATH = "config";
 
-	// Table names
+	// Table column names
 	public static final String ID = "_id";
 	public static final String NAME = "name";
 	public static final String VALUE = "value";
+
+	// Config names
+	public static final String LAST_SYNC_TIME = "lastSyncTime";
 
 	private static final String DATABASE_CREATE = "create table "
 			+ TABLE_NAME

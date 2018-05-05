@@ -1,14 +1,11 @@
-package budikpet.cvut.cz.semestralwork.data;
+package budikpet.cvut.cz.semestralwork.data.sync;
 
-import android.app.AlarmManager;
 import android.app.IntentService;
-import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Binder;
 import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
@@ -26,11 +23,13 @@ import java.net.URL;
 import java.util.LinkedList;
 
 import budikpet.cvut.cz.semestralwork.R;
+import budikpet.cvut.cz.semestralwork.data.Provider;
+import budikpet.cvut.cz.semestralwork.data.config.Config;
+import budikpet.cvut.cz.semestralwork.data.config.ConfigTable;
 import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
 import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
 
 public class SyncService extends IntentService {
-	private long oldestRecordDays = 30;
 	public static final String broadcastFilter = "SyncServiceBroadcast";
 	public static final int RUNNING = 0;
 	public static final int STOPPED = 1;
@@ -67,7 +66,7 @@ public class SyncService extends IntentService {
 
 		publishState(RUNNING);
 		updateEntries();
-		updateSchedule();
+		scheduleNewAlarm();
 
 		publishState(STOPPED);
 
@@ -75,8 +74,37 @@ public class SyncService extends IntentService {
 		SystemClock.sleep(5000);
 	}
 
-	private void updateSchedule() {
-		
+	private void scheduleNewAlarm() {
+		ContentResolver resolver = getContentResolver();
+
+		// Store new time to database
+		String selection = ConfigTable.NAME + " == ?";
+		String[] selectionArgs = {ConfigTable.LAST_SYNC_TIME};
+		try (
+				Cursor cursorConfig = resolver.query(Provider.CONFIG_URI, null,
+						selection, selectionArgs, null)
+		) {
+			// Update sync time
+			if (cursorConfig != null && cursorConfig.getCount() > 0) {
+				ContentValues cv = new ContentValues();
+				Config.lastSyncTime = System.currentTimeMillis() + Config.syncInterval;
+				cv.put(ConfigTable.VALUE, Config.lastSyncTime);
+
+				int updated = resolver.update(Provider.CONFIG_URI, cv, selection,
+						selectionArgs);
+				if (updated == 0) {
+					throw new IOException("Can't update");
+				}
+			} else {
+				throw new IOException("Config does not exist.");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			Log.e("UPDATE_SCHEDULE", "Error occured: " + e.getMessage());
+		}
+
+		// New alarm
+		sendBroadcast(new Intent(getApplicationContext(), ScheduleBroadcastReceiver.class));
 	}
 
 	private void updateEntries() {
@@ -135,7 +163,7 @@ public class SyncService extends IntentService {
 	 * @return time in millis. Entries older than this time should be deleted.
 	 */
 	private long getTime() {
-		return System.currentTimeMillis() - oldestRecordDays * 24 * 60 * 60 * 1000;
+		return System.currentTimeMillis() - Config.oldestEntryDays * 24 * 60 * 60 * 1000;
 	}
 
 	/**

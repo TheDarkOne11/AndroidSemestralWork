@@ -29,11 +29,11 @@
         <activity android:name=".screens.configureFeeds.ActivityConfigureFeeds" />
 
         <service
-            android:name=".data.SyncService"
+            android:name=".data.sync.SyncService"
             android:exported="false" />
 
         <receiver
-            android:name=".data.ScheduleBroadcastReceiver"
+            android:name=".data.sync.ScheduleBroadcastReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>

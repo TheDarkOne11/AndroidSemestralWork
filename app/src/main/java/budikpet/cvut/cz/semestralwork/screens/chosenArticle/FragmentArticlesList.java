@@ -25,7 +25,7 @@ import android.widget.ListView;
 
 import budikpet.cvut.cz.semestralwork.R;
 import budikpet.cvut.cz.semestralwork.data.Provider;
-import budikpet.cvut.cz.semestralwork.data.SyncService;
+import budikpet.cvut.cz.semestralwork.data.sync.SyncService;
 import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
 import budikpet.cvut.cz.semestralwork.data.articles.ArticlesCursorAdapter;
 
