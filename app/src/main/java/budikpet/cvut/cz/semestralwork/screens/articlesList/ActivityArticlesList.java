@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import budikpet.cvut.cz.semestralwork.R;
+import budikpet.cvut.cz.semestralwork.data.ScheduleBroadcastReceiver;
 import budikpet.cvut.cz.semestralwork.screens.chosenArticle.FragmentArticlesList;
 import budikpet.cvut.cz.semestralwork.screens.configureFeeds.ActivityConfigureFeeds;
 
@@ -22,6 +23,9 @@ public class ActivityArticlesList extends AppCompatActivity {
 
 		if (savedInstanceState == null) {
 			fm.beginTransaction().add(R.id.newsListContainer, FragmentArticlesList.newInstance()).commit();
+
+			// Update Sync timer
+			sendBroadcast(new Intent(this, ScheduleBroadcastReceiver.class));
 		}
 	}
 
@@ -58,47 +62,4 @@ public class ActivityArticlesList extends AppCompatActivity {
 
 		return super.onOptionsItemSelected(item);
 	}
-
-//	public void onPostExecute(ArrayList<SyndFeed> feeds) {
-//		// Extract all entries
-//		ArrayList<SyndEntry> entries = new ArrayList<>();
-//		for (SyndFeed currFeed : feeds) {
-//			List<SyndEntry> currEntries = currFeed.getEntries();
-//			entries.addAll(currEntries);
-//		}
-//
-//		// Sort entries by date
-//		Collections.sort(entries, new Comparator<SyndEntry>() {
-//			@Override
-//			public int compare(SyndEntry o1, SyndEntry o2) {
-//				return (int) (o2.getPublishedDate().getTime() - o1.getPublishedDate().getTime());
-//			}
-//		});
-//
-//		// Clear database
-//		getContentResolver().delete(FeedReaderContentProvider.ARTICLE_URI, null, null);
-//
-//		// Store entries in the database.
-//		ContentValues cv = new ContentValues();
-//		for (Object curr : entries) {
-//			SyndEntry entry = (SyndEntry) curr;
-//
-//			// Set content values
-//			cv.put(ArticleTable.HEADING, entry.getTitle());
-//			cv.put(ArticleTable.TEXT, entry.getDescription().getValue());
-//			cv.put(ArticleTable.URL, entry.getLink());
-//			cv.put(ArticleTable.TIME_CREATED, entry.getPublishedDate().getTime());
-//
-//			String author = entry.getAuthor();
-//			if (author == null || author.equals("")) {
-//				author = "UNKNOWN_AUTHOR";
-//			}
-//			cv.put(ArticleTable.AUTHOR, author);
-//
-//			// Save it to database
-//			getContentResolver().insert(FeedReaderContentProvider.ARTICLE_URI, cv);
-//		}
-//
-//		setRefreshing(false);
-//	}
 }

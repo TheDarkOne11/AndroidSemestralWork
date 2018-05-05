@@ -13,7 +13,7 @@ import android.text.TextUtils;
 import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
 import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
 
-public class FeedReaderContentProvider extends ContentProvider {
+public class Provider extends ContentProvider {
 	private DBHelper dbHelper;
 
 	private static final String AUTHORITY = "budikpet.cvut.cz.semestralWork";
@@ -53,7 +53,7 @@ public class FeedReaderContentProvider extends ContentProvider {
 	SQLiteDatabase db;
 	ContentResolver contentResolver;
 
-	public FeedReaderContentProvider() {
+	public Provider() {
 	}
 
 	@Override

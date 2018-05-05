@@ -16,7 +16,7 @@ import android.view.View;
 import android.widget.ListView;
 
 import budikpet.cvut.cz.semestralwork.R;
-import budikpet.cvut.cz.semestralwork.data.FeedReaderContentProvider;
+import budikpet.cvut.cz.semestralwork.data.Provider;
 import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
 import budikpet.cvut.cz.semestralwork.data.feeds.FeedsCursorAdapter;
 
@@ -82,7 +82,7 @@ public class ActivityConfigureFeeds extends AppCompatActivity
 
 		switch (id) {
 			case LOADER_ID:
-				return new CursorLoader(this, FeedReaderContentProvider.FEED_URI,
+				return new CursorLoader(this, Provider.FEED_URI,
 						new String[]{FeedTable.ID, FeedTable.HEADING, FeedTable.URL},
 						null, null, null);
 			default:
@@ -130,7 +130,7 @@ public class ActivityConfigureFeeds extends AppCompatActivity
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						// Remove feed
-						getContentResolver().delete(FeedReaderContentProvider.FEED_URI,
+						getContentResolver().delete(Provider.FEED_URI,
 								FeedTable.ID + "=" + feedId, null);
 					}
 				})

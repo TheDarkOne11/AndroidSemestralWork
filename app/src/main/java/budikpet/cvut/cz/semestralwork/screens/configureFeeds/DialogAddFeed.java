@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.EditText;
 
 import budikpet.cvut.cz.semestralwork.R;
-import budikpet.cvut.cz.semestralwork.data.FeedReaderContentProvider;
+import budikpet.cvut.cz.semestralwork.data.Provider;
 import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
 
 public class DialogAddFeed extends AppCompatDialogFragment {
@@ -32,7 +32,7 @@ public class DialogAddFeed extends AppCompatDialogFragment {
 						ContentValues cv = new ContentValues();
 						cv.put(FeedTable.URL, urlEditText.getText().toString());
 						cv.put(FeedTable.HEADING, "DUMMY_HEADING");
-						getActivity().getContentResolver().insert(FeedReaderContentProvider.FEED_URI, cv);
+						getActivity().getContentResolver().insert(Provider.FEED_URI, cv);
 					}
 				})
 				.setNegativeButton(R.string.dialogButtonCancel, new DialogInterface.OnClickListener() {
