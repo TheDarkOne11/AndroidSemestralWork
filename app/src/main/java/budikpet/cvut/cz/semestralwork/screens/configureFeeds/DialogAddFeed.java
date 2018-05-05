@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.view.LayoutInflater;
@@ -13,6 +14,7 @@ import android.widget.EditText;
 import budikpet.cvut.cz.semestralwork.R;
 import budikpet.cvut.cz.semestralwork.data.Provider;
 import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
+import budikpet.cvut.cz.semestralwork.data.sync.SyncService;
 
 public class DialogAddFeed extends AppCompatDialogFragment {
 
@@ -28,11 +30,10 @@ public class DialogAddFeed extends AppCompatDialogFragment {
 				.setPositiveButton(R.string.dialogAddFeed, new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						// TODO Use feed loading service to add new feed
-						ContentValues cv = new ContentValues();
-						cv.put(FeedTable.URL, urlEditText.getText().toString());
-						cv.put(FeedTable.HEADING, "DUMMY_HEADING");
-						getActivity().getContentResolver().insert(Provider.FEED_URI, cv);
+						// Start SyncService, add url to update new feed
+						Intent intent = new Intent(getContext(), SyncService.class);
+						intent.putExtra(R.id.keyFeedId + "", urlEditText.getText().toString());
+						getActivity().startService(intent);
 					}
 				})
 				.setNegativeButton(R.string.dialogButtonCancel, new DialogInterface.OnClickListener() {

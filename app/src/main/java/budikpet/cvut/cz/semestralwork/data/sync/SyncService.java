@@ -3,6 +3,7 @@ package budikpet.cvut.cz.semestralwork.data.sync;
 import android.app.IntentService;
 import android.content.ContentResolver;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -20,6 +21,7 @@ import com.google.code.rome.android.repackaged.com.sun.syndication.io.SyndFeedIn
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.LinkedList;
 
 import budikpet.cvut.cz.semestralwork.R;
@@ -58,22 +60,6 @@ public class SyncService extends IntentService {
 		LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
 	}
 
-	@Override
-	protected void onHandleIntent(Intent intent) {
-		if(intent == null) {
-			return;
-		}
-
-		publishState(RUNNING);
-		updateEntries();
-		scheduleNewAlarm();
-
-		publishState(STOPPED);
-
-		// TODO Testing only
-		SystemClock.sleep(5000);
-	}
-
 	private void scheduleNewAlarm() {
 		ContentResolver resolver = getContentResolver();
 
@@ -107,6 +93,75 @@ public class SyncService extends IntentService {
 		sendBroadcast(new Intent(getApplicationContext(), ScheduleBroadcastReceiver.class));
 	}
 
+
+	@Override
+	protected void onHandleIntent(Intent intent) {
+		if(intent == null) {
+			return;
+		}
+
+		publishState(RUNNING);
+
+		String newFeedUrl = intent.getStringExtra(R.id.keyFeedId + "");
+		if(newFeedUrl != null) {
+			// Update entries of new feed and feed itself
+			updateEntries(newFeedUrl);
+		} else {
+			// Update all entries
+			updateEntries();
+			scheduleNewAlarm();
+		}
+
+		publishState(STOPPED);
+
+		// TODO Testing only
+		SystemClock.sleep(5000);
+	}
+
+	/**
+	 * Update all entries of the feed symbolized by the given URL.
+	 * @param url
+	 */
+	private void updateEntries(String url) {
+		ContentValues cv = new ContentValues();
+		try {
+			SyndFeedInput input = new SyndFeedInput();
+			URL feedUrl = new URL(url);
+			SyndFeed feed = input.build(new InputStreamReader(feedUrl.openStream()));
+
+			if(feed.getLink() == null) {
+				// URL doesn`t lead to RSS feed
+				cv.put(FeedTable.HEADING, getApplicationContext().getResources().getString(R.string.rssNotFound));
+				cv.put(FeedTable.URL, url);
+				getContentResolver().insert(Provider.FEED_URI, cv);
+				return;
+			}
+
+			// New feed exists, update it
+			cv.put(FeedTable.HEADING, feed.getTitle());
+			cv.put(FeedTable.URL, url);
+			getContentResolver().insert(Provider.FEED_URI, cv);
+
+			// Save entries of current feed
+			for (Object curr : feed.getEntries()) {
+				SyndEntry entry = (SyndEntry) curr;
+
+				saveEntry(entry);
+			}
+
+		} catch (UnknownHostException e) {
+			cv.put(FeedTable.HEADING, getApplicationContext().getResources().getString(R.string.rssNotFound));
+			cv.put(FeedTable.URL, url);
+			getContentResolver().insert(Provider.FEED_URI, cv);
+		} catch (IOException | FeedException e) {
+			e.printStackTrace();
+			Log.e("CHECK_FEED", e.getMessage());
+		}
+	}
+
+	/**
+	 * Updates all entries of all feeds from database.
+	 */
 	private void updateEntries() {
 		try (Cursor cursor = getContentResolver().query(Provider.FEED_URI,
 				new String[]{FeedTable.URL}, null, null, null)) {
@@ -145,6 +200,7 @@ public class SyncService extends IntentService {
 
 			saveEntry(entry);
 		}
+
 	}
 
 	/**

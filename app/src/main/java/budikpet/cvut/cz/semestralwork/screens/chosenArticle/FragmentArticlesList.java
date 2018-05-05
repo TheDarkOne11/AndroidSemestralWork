@@ -36,7 +36,6 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 	private Context activityContext;
 	private MenuItem itemRefresh;
 	private View actionProgress;
-//	private Synchronize synchronize;
 
 	private BroadcastReceiver syncStateReceiver = new BroadcastReceiver() {
 		@Override
@@ -73,7 +72,6 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
-		setRetainInstance(true);
 
 		// Get progress bar view
 		actionProgress = LayoutInflater.from(getActivity()).inflate(R.layout.action_view_progress,
@@ -178,8 +176,6 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 	public boolean onOptionsItemSelected(final MenuItem item) {
 		switch (item.getItemId()) {
 			case R.id.itemRefresh:
-//				synchronize = new Synchronize();
-//				synchronize.execute();
 				Intent intent = new Intent(getContext(), SyncService.class);
 				getActivity().startService(intent);
 				return true;
@@ -192,25 +188,6 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.fragment_articles_list_menu, menu);
 		itemRefresh = menu.findItem(R.id.itemRefresh);
-
-		// Refreshing
-//		if (synchronize != null) {
-//			setRefreshing(synchronize.isRunning());
-//		} else {
-//			setRefreshing(false);
-//		}
-	}
-
-	private void setRefreshing(boolean isRefreshing) {
-		if (itemRefresh == null) {
-			return;
-		}
-
-		if (isRefreshing) {
-			itemRefresh.setActionView(actionProgress);
-		} else {
-			itemRefresh.setActionView(null);
-		}
 	}
 
 	/**
