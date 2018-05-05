@@ -36,4 +36,8 @@
     <string name="dialogButtonCancel">Cancel</string>
     <string name="dialogAddFeed">Add</string>
     <string name="syncProgress">Loading...</string>
+    <string name="DialogFeedAdded">Feed added</string>
+    <string name="DialogFeedWrong">Did not find RSS feed on given URL</string>
+    <string name="DialogFeedDuplicate">This feed already exists.</string>
+    <string name="DialogFeedDeleted">Feed deleted</string>
 </resources>

@@ -1,32 +1,66 @@
 package budikpet.cvut.cz.semestralwork.screens.configureFeeds;
 
-import android.content.DialogInterface;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.AlertDialog;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import budikpet.cvut.cz.semestralwork.R;
 import budikpet.cvut.cz.semestralwork.data.Provider;
 import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
 import budikpet.cvut.cz.semestralwork.data.feeds.FeedsCursorAdapter;
+import budikpet.cvut.cz.semestralwork.data.sync.SyncService;
 
 public class ActivityConfigureFeeds extends AppCompatActivity
 		implements LoaderCallbacks<Cursor> {
 	private final int LOADER_ID = 5;
 	private ListView listView;
 	private FeedsCursorAdapter adapter;
-	private String lastAddedUrl;
 
+	private BroadcastReceiver receiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			int state = intent.getIntExtra(R.id.keyState + "", SyncService.FEED_OK);
+			switch (state) {
+				case SyncService.FEED_OK:
+					Toast.makeText(getApplicationContext(), R.string.DialogFeedAdded, Toast.LENGTH_SHORT).show();
+					break;
+				case SyncService.FEED_NOT_OK:
+					Toast.makeText(getApplicationContext(), R.string.DialogFeedWrong, Toast.LENGTH_SHORT).show();
+					break;
+				case SyncService.FEED_DUPLICATE:
+					Toast.makeText(getApplicationContext(), R.string.DialogFeedDuplicate, Toast.LENGTH_SHORT).show();
+					break;
+			}
+		}
+	};
+
+	@Override
+	protected void onResume() {
+		LocalBroadcastManager.getInstance(this)
+				.registerReceiver(receiver, new IntentFilter(SyncService.feedBroadcastFilter));
+		super.onResume();
+	}
+
+	@Override
+	protected void onPause() {
+		LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+		super.onPause();
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

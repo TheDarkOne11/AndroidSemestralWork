@@ -16,7 +16,7 @@ public class ScheduleBroadcastReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 		// Set alarm
 		Log.i("ALARM", "Setting alarm");
-		AlarmManager am = (AlarmManager) context.getSystemService(context.ALARM_SERVICE);
+		AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 		Intent feedIntent = new Intent(context, SyncService.class);
 		PendingIntent pendingIntent = PendingIntent.getService(context, 0, feedIntent, 0);
 		am.setExact(AlarmManager.RTC, Config.lastSyncTime, pendingIntent);

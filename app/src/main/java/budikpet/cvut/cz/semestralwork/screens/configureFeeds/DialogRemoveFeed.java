@@ -5,22 +5,17 @@ import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatDialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.EditText;
+import android.widget.Toast;
 
 import budikpet.cvut.cz.semestralwork.R;
 import budikpet.cvut.cz.semestralwork.data.Provider;
 import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
-import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
-import budikpet.cvut.cz.semestralwork.data.sync.SyncService;
 
 public class DialogRemoveFeed extends AppCompatDialogFragment {
 	private long feedId;
@@ -56,6 +51,10 @@ public class DialogRemoveFeed extends AppCompatDialogFragment {
 		return builder.create();
 	}
 
+	private void onPostExecute() {
+
+	}
+
 	/**
 	 * Remove feed and its entries.
 	 */
@@ -64,7 +63,7 @@ public class DialogRemoveFeed extends AppCompatDialogFragment {
 		@Override
 		protected Void doInBackground(Long... feedIds) {
 			ContentResolver resolver = getActivity().getContentResolver();
-			for(Long feedId : feedIds) {
+			for (Long feedId : feedIds) {
 				// Remove all feeds with given ids and their entries
 				resolver.delete(ContentUris.withAppendedId(Provider.FEED_URI, feedId),
 						null, null);
@@ -77,6 +76,12 @@ public class DialogRemoveFeed extends AppCompatDialogFragment {
 			}
 
 			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void aVoid) {
+			super.onPostExecute(aVoid);
+			Toast.makeText(DialogRemoveFeed.this.getActivity(), R.string.DialogFeedDeleted, Toast.LENGTH_SHORT).show();
 		}
 	}
 }

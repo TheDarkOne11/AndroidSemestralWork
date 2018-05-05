@@ -25,9 +25,9 @@ import android.widget.ListView;
 
 import budikpet.cvut.cz.semestralwork.R;
 import budikpet.cvut.cz.semestralwork.data.Provider;
-import budikpet.cvut.cz.semestralwork.data.sync.SyncService;
 import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
 import budikpet.cvut.cz.semestralwork.data.articles.ArticlesCursorAdapter;
+import budikpet.cvut.cz.semestralwork.data.sync.SyncService;
 
 public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cursor> {
 	private final int LOADER_ID = 1;
@@ -40,9 +40,8 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 	private BroadcastReceiver syncStateReceiver = new BroadcastReceiver() {
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			String action = intent.getAction();
 			int state = intent.getIntExtra(R.id.keyState + "", SyncService.STOPPED);
-			switch (state){
+			switch (state) {
 				case SyncService.RUNNING:
 					itemRefresh.setActionView(R.layout.action_view_progress);
 					break;
@@ -81,7 +80,7 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 	@Override
 	public void onResume() {
 		LocalBroadcastManager.getInstance(getActivity())
-				.registerReceiver(syncStateReceiver, new IntentFilter(SyncService.broadcastFilter));
+				.registerReceiver(syncStateReceiver, new IntentFilter(SyncService.mainBroadcastFilter));
 		super.onResume();
 	}
 

@@ -25,22 +25,33 @@ import java.util.LinkedList;
 
 import budikpet.cvut.cz.semestralwork.R;
 import budikpet.cvut.cz.semestralwork.data.Provider;
+import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
 import budikpet.cvut.cz.semestralwork.data.config.Config;
 import budikpet.cvut.cz.semestralwork.data.config.ConfigTable;
-import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
 import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
 
 public class SyncService extends IntentService {
-	public static final String broadcastFilter = "SyncServiceBroadcast";
+	/**
+	 * Used for indicating end of synchronization of all entries.
+	 */
+	public static final String mainBroadcastFilter = "SyncServiceBroadcastMain";
+
+	/**
+	 * Used for indicating end of feed tasks.
+	 */
+	public static final String feedBroadcastFilter = "SyncServiceBroadcastFeed";
 	public static final int RUNNING = 0;
 	public static final int STOPPED = 1;
+	public static final int FEED_OK = 2;
+	public static final int FEED_NOT_OK = 3;
+	public static final int FEED_DUPLICATE = 4;
 
 	public SyncService() {
 		super("SyncService");
 	}
 
-	private void publishState(int state) {
-		Intent intent = new Intent(broadcastFilter);
+	private void publishState(int state, String filter) {
+		Intent intent = new Intent(filter);
 		intent.putExtra(R.id.keyState + "", state);
 		LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
 	}
@@ -81,23 +92,23 @@ public class SyncService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		if(intent == null) {
+		if (intent == null) {
 			return;
 		}
 
-		publishState(RUNNING);
+		publishState(RUNNING, mainBroadcastFilter);
 
 		String newFeedUrl = intent.getStringExtra(R.id.keyFeedId + "");
-		if(newFeedUrl != null) {
+		if (newFeedUrl != null) {
 			// Update entries of new feed and feed itself
-			updateEntries(newFeedUrl);
+			updateNewFeed(newFeedUrl);
 		} else {
 			// Update all entries
 			updateEntries();
 			scheduleNewAlarm();
 		}
 
-		publishState(STOPPED);
+		publishState(STOPPED, mainBroadcastFilter);
 
 		// TODO Testing only
 		SystemClock.sleep(5000);
@@ -105,20 +116,31 @@ public class SyncService extends IntentService {
 
 	/**
 	 * Update all entries of the feed symbolized by the given URL.
+	 *
 	 * @param url
 	 */
-	private void updateEntries(String url) {
+	private void updateNewFeed(String url) {
 		ContentValues cv = new ContentValues();
-		try {
+
+		String selection = FeedTable.URL + " = ?";
+		String[] selectionArgs = {url};
+		try (
+				Cursor duplicateFeed = getContentResolver().query(Provider.FEED_URI, new String[]{FeedTable.URL},
+						selection, selectionArgs, null)
+		) {
 			SyndFeedInput input = new SyndFeedInput();
 			URL feedUrl = new URL(url);
 			SyndFeed feed = input.build(new InputStreamReader(feedUrl.openStream()));
 
-			if(feed.getLink() == null) {
+
+			if (feed.getLink() == null) {
 				// URL doesn`t lead to RSS feed
-				cv.put(FeedTable.HEADING, getApplicationContext().getResources().getString(R.string.rssNotFound));
-				cv.put(FeedTable.URL, url);
-				getContentResolver().insert(Provider.FEED_URI, cv);
+				throw new UnknownHostException();
+			}
+
+			if (duplicateFeed != null && duplicateFeed.getCount() > 0) {
+				// Same Feed already exists
+				publishState(FEED_DUPLICATE, feedBroadcastFilter);
 				return;
 			}
 
@@ -134,11 +156,13 @@ public class SyncService extends IntentService {
 
 				saveEntry(entry, feedId);
 			}
+			publishState(FEED_OK, feedBroadcastFilter);
 
 		} catch (UnknownHostException e) {
 			cv.put(FeedTable.HEADING, getApplicationContext().getResources().getString(R.string.rssNotFound));
 			cv.put(FeedTable.URL, url);
 			getContentResolver().insert(Provider.FEED_URI, cv);
+			publishState(FEED_NOT_OK, feedBroadcastFilter);
 		} catch (IOException | FeedException e) {
 			e.printStackTrace();
 			Log.e("CHECK_FEED", e.getMessage());
@@ -151,7 +175,7 @@ public class SyncService extends IntentService {
 	private void updateEntries() {
 		try (
 				Cursor cursor = getContentResolver().query(Provider.FEED_URI,
-				new String[]{FeedTable.ID, FeedTable.URL}, null, null, null)
+						new String[]{FeedTable.ID, FeedTable.URL}, null, null, null)
 		) {
 			if (cursor == null) {
 				throw new IndexOutOfBoundsException("Problem with cursor");
@@ -211,7 +235,7 @@ public class SyncService extends IntentService {
 	/**
 	 * Persists entry information.
 	 *
-	 * @param entry is the article to be persisted.
+	 * @param entry  is the article to be persisted.
 	 * @param feedId
 	 */
 	private void saveEntry(SyndEntry entry, Long feedId) {
@@ -255,7 +279,7 @@ public class SyncService extends IntentService {
 	/**
 	 * Fills ContentValues using entry data.
 	 *
-	 * @param entry data
+	 * @param entry  data
 	 * @param feedId
 	 * @return ContentValues from data.
 	 */

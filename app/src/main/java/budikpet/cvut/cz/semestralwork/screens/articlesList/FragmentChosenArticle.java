@@ -49,10 +49,10 @@ public class FragmentChosenArticle extends Fragment implements LoaderManager.Loa
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
 
-		heading = (TextView) view.findViewById(R.id.heading);
-		subheading = (TextView) view.findViewById(R.id.subheading);
-		link = (TextView) view.findViewById(R.id.fullArticleLink);
-		mainText = (TextView) view.findViewById(R.id.mainText);
+		heading = view.findViewById(R.id.heading);
+		subheading = view.findViewById(R.id.subheading);
+		link = view.findViewById(R.id.fullArticleLink);
+		mainText = view.findViewById(R.id.mainText);
 
 		mainText.setMovementMethod(LinkMovementMethod.getInstance());
 	}

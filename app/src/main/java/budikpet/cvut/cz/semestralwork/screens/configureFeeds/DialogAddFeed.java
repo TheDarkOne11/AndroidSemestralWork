@@ -2,7 +2,6 @@ package budikpet.cvut.cz.semestralwork.screens.configureFeeds;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,8 +11,6 @@ import android.view.View;
 import android.widget.EditText;
 
 import budikpet.cvut.cz.semestralwork.R;
-import budikpet.cvut.cz.semestralwork.data.Provider;
-import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
 import budikpet.cvut.cz.semestralwork.data.sync.SyncService;
 
 public class DialogAddFeed extends AppCompatDialogFragment {
