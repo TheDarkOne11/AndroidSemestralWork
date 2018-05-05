@@ -1,4 +1,4 @@
-package budikpet.cvut.cz.semestralwork.articlesList;
+package budikpet.cvut.cz.semestralwork.screens.articlesList;
 
 import android.content.Context;
 import android.content.Intent;

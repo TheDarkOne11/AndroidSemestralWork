@@ -1,4 +1,4 @@
-package budikpet.cvut.cz.semestralwork.configureFeeds;
+package budikpet.cvut.cz.semestralwork.screens.configureFeeds;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

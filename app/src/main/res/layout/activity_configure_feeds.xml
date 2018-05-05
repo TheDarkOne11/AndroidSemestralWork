@@ -4,6 +4,6 @@
     android:id="@+id/feedsListView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".configureFeeds.ActivityConfigureFeeds">
+    tools:context=".screens.configureFeeds.ActivityConfigureFeeds">
 
 </ListView>

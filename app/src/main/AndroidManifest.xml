@@ -11,14 +11,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".articlesList.ActivityArticlesList">
+        <activity android:name=".screens.articlesList.ActivityArticlesList">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".chosenArticle.ActivityChosenArticle" />
+        <activity android:name=".screens.chosenArticle.ActivityChosenArticle" />
 
         <provider
             android:name=".data.FeedReaderContentProvider"
@@ -26,7 +26,7 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".configureFeeds.ActivityConfigureFeeds"></activity>
+        <activity android:name=".screens.configureFeeds.ActivityConfigureFeeds"></activity>
     </application>
 
 </manifest>
