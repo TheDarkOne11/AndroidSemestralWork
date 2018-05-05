@@ -121,27 +121,11 @@ public class ActivityConfigureFeeds extends AppCompatActivity
 		// Starts new dialog
 		final int feedId = (int) view.getTag(R.id.keyFeedId);
 
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		View dialogRemoveView = getLayoutInflater().inflate(R.layout.dialog_remove_feed, null);
+		Bundle args = new Bundle();
+		args.putLong(R.id.keyFeedId + "", feedId);
 
-		// Build the alert dialog
-		builder.setView(dialogRemoveView)
-				.setPositiveButton(R.string.removeDialogDelete, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// Remove feed
-						getContentResolver().delete(Provider.FEED_URI,
-								FeedTable.ID + "=" + feedId, null);
-					}
-				})
-				.setNegativeButton(R.string.dialogButtonCancel, new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-
-					}
-				});
-
-		AlertDialog dialog = builder.create();
-		dialog.show();
+		DialogRemoveFeed dialogRemoveFeed = new DialogRemoveFeed();
+		dialogRemoveFeed.setArguments(args);
+		dialogRemoveFeed.show(getSupportFragmentManager(), "RemoveFeed");
 	}
 }

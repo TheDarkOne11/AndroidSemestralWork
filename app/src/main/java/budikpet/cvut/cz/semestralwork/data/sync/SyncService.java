@@ -2,8 +2,8 @@ package budikpet.cvut.cz.semestralwork.data.sync;
 
 import android.app.IntentService;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -11,7 +11,6 @@ import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndEntry;
 import com.google.code.rome.android.repackaged.com.sun.syndication.feed.synd.SyndFeed;
@@ -38,20 +37,6 @@ public class SyncService extends IntentService {
 
 	public SyncService() {
 		super("SyncService");
-	}
-
-	@Override
-	public void onCreate() {
-		Log.i("SERVICE", "OnCreate");
-		Toast.makeText(getApplicationContext(), "SyncService: OnCreate", Toast.LENGTH_SHORT).show();
-		super.onCreate();
-	}
-
-	@Override
-	public void onDestroy() {
-		Log.i("SERVICE", "OnDestroy");
-		Toast.makeText(getApplicationContext(), "SyncService: OnDestroy", Toast.LENGTH_SHORT).show();
-		super.onDestroy();
 	}
 
 	private void publishState(int state) {
@@ -140,13 +125,14 @@ public class SyncService extends IntentService {
 			// New feed exists, update it
 			cv.put(FeedTable.HEADING, feed.getTitle());
 			cv.put(FeedTable.URL, url);
-			getContentResolver().insert(Provider.FEED_URI, cv);
+			Uri uri = getContentResolver().insert(Provider.FEED_URI, cv);
+			long feedId = ContentUris.parseId(uri);
 
 			// Save entries of current feed
 			for (Object curr : feed.getEntries()) {
 				SyndEntry entry = (SyndEntry) curr;
 
-				saveEntry(entry);
+				saveEntry(entry, feedId);
 			}
 
 		} catch (UnknownHostException e) {
@@ -163,8 +149,10 @@ public class SyncService extends IntentService {
 	 * Updates all entries of all feeds from database.
 	 */
 	private void updateEntries() {
-		try (Cursor cursor = getContentResolver().query(Provider.FEED_URI,
-				new String[]{FeedTable.URL}, null, null, null)) {
+		try (
+				Cursor cursor = getContentResolver().query(Provider.FEED_URI,
+				new String[]{FeedTable.ID, FeedTable.URL}, null, null, null)
+		) {
 			if (cursor == null) {
 				throw new IndexOutOfBoundsException("Problem with cursor");
 			}
@@ -173,13 +161,11 @@ public class SyncService extends IntentService {
 
 			// Get all URLs from database
 			while (cursor.moveToNext()) {
-				urls.add(cursor.getString(cursor.getColumnIndex(FeedTable.URL)));
+				String curr = cursor.getString(cursor.getColumnIndex(FeedTable.URL));
+				Long feedId = cursor.getLong(cursor.getColumnIndex(FeedTable.ID));
+				processFeed(curr, feedId);
 			}
 
-			// Update entries
-			for(String curr : urls) {
-				processFeed(curr);
-			}
 			removeOldEntries();
 
 		} catch (IndexOutOfBoundsException | FeedException | IOException e) {
@@ -189,7 +175,7 @@ public class SyncService extends IntentService {
 		}
 	}
 
-	private void processFeed(String url) throws IOException, FeedException {
+	private void processFeed(String url, Long feedId) throws IOException, FeedException {
 		SyndFeedInput input = new SyndFeedInput();
 		URL feedUrl = new URL(url);
 		SyndFeed feed = input.build(new InputStreamReader(feedUrl.openStream()));
@@ -198,7 +184,7 @@ public class SyncService extends IntentService {
 		for (Object curr : feed.getEntries()) {
 			SyndEntry entry = (SyndEntry) curr;
 
-			saveEntry(entry);
+			saveEntry(entry, feedId);
 		}
 
 	}
@@ -226,10 +212,11 @@ public class SyncService extends IntentService {
 	 * Persists entry information.
 	 *
 	 * @param entry is the article to be persisted.
+	 * @param feedId
 	 */
-	private void saveEntry(SyndEntry entry) {
+	private void saveEntry(SyndEntry entry, Long feedId) {
 		// Get content values of current entry
-		ContentValues cv = getContentValues(entry);
+		ContentValues cv = getContentValues(entry, feedId);
 		ContentResolver resolver = getContentResolver();
 
 		// Check if entry isn`t too old
@@ -269,9 +256,10 @@ public class SyncService extends IntentService {
 	 * Fills ContentValues using entry data.
 	 *
 	 * @param entry data
+	 * @param feedId
 	 * @return ContentValues from data.
 	 */
-	private ContentValues getContentValues(@NonNull SyndEntry entry) {
+	private ContentValues getContentValues(@NonNull SyndEntry entry, Long feedId) {
 		ContentValues cv = new ContentValues();
 
 		// Set content values
@@ -279,6 +267,7 @@ public class SyncService extends IntentService {
 		cv.put(ArticleTable.TEXT, entry.getDescription().getValue());
 		cv.put(ArticleTable.URL, entry.getLink());
 		cv.put(ArticleTable.TIME_CREATED, entry.getPublishedDate().getTime());
+		cv.put(ArticleTable.FEED_ID, feedId);
 
 		String author = entry.getAuthor();
 		if (author == null || author.equals("")) {

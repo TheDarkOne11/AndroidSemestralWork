@@ -2,6 +2,7 @@ package budikpet.cvut.cz.semestralwork.data;
 
 import android.content.ContentProvider;
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -51,7 +52,7 @@ public class Provider extends ContentProvider {
 		sURIMatcher.addURI(AUTHORITY, ArticleTable.BASE_PATH, ARTICLE_LIST);
 		sURIMatcher.addURI(AUTHORITY, ArticleTable.BASE_PATH + "/#", ARTICLE);
 		sURIMatcher.addURI(AUTHORITY, FeedTable.BASE_PATH, FEED_LIST);
-		sURIMatcher.addURI(AUTHORITY, FeedTable.BASE_PATH + "/#", FEED_LIST);
+		sURIMatcher.addURI(AUTHORITY, FeedTable.BASE_PATH + "/#", FEED);
 		sURIMatcher.addURI(AUTHORITY, ConfigTable.BASE_PATH, CONFIG);
 	}
 
@@ -144,7 +145,7 @@ public class Provider extends ContentProvider {
 			}
 			case ARTICLE: {
 				table = ArticleTable.TABLE_NAME;
-				String idSelection = ArticleTable.ID + "=" + uri.getLastPathSegment();
+				String idSelection = ArticleTable.ID + "=" + ContentUris.parseId(uri);
 				selection = TextUtils.isEmpty(selection) ? idSelection :
 						"(" + selection + ") AND " + idSelection;
 				break;
@@ -155,7 +156,7 @@ public class Provider extends ContentProvider {
 			}
 			case FEED: {
 				table = FeedTable.TABLE_NAME;
-				String idSelection = FeedTable.ID + "=" + uri.getLastPathSegment();
+				String idSelection = FeedTable.ID + "=" + ContentUris.parseId(uri);
 				selection = TextUtils.isEmpty(selection) ? idSelection :
 						"(" + selection + ") AND " + idSelection;
 				break;

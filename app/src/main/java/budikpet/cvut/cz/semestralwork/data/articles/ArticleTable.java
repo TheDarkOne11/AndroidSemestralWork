@@ -17,6 +17,7 @@ public class ArticleTable {
 	public static final String AUTHOR = "author";
 	public static final String URL = "url";
 	public static final String TIME_CREATED = "timeCreated";
+	public static final String FEED_ID = "feedId";
 
 	// Save time in millis
 	private static final String DATABASE_CREATE = "create table "
@@ -27,7 +28,8 @@ public class ArticleTable {
 			+ TEXT + " text, "
 			+ AUTHOR + " text, "
 			+ URL + " text not null, "
-			+ TIME_CREATED + " integer "
+			+ TIME_CREATED + " integer, "
+			+ FEED_ID + " integer not null "
 			+ ");";
 
 	public static void onCreate(SQLiteDatabase db) {
