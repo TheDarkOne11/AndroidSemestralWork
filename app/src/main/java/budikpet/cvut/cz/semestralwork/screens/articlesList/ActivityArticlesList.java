@@ -1,13 +1,15 @@
 package budikpet.cvut.cz.semestralwork.screens.articlesList;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -18,25 +20,20 @@ import java.io.IOException;
 
 import budikpet.cvut.cz.semestralwork.R;
 import budikpet.cvut.cz.semestralwork.data.Provider;
+import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
 import budikpet.cvut.cz.semestralwork.data.config.Config;
 import budikpet.cvut.cz.semestralwork.data.config.ConfigTable;
 import budikpet.cvut.cz.semestralwork.data.sync.ScheduleBroadcastReceiver;
+import budikpet.cvut.cz.semestralwork.screens.chosenArticle.ActivityChosenArticle;
 import budikpet.cvut.cz.semestralwork.screens.chosenArticle.FragmentArticlesList;
 import budikpet.cvut.cz.semestralwork.screens.configureFeeds.ActivityConfigureFeeds;
 
-public class ActivityArticlesList extends AppCompatActivity {
+public class ActivityArticlesList extends AppCompatActivity implements  FragmentArticlesList.CallbacksListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_articles_list);
-		FragmentManager fm = getSupportFragmentManager();
 
-		if (savedInstanceState == null) {
-			fm.beginTransaction().add(R.id.newsListContainer, FragmentArticlesList.newInstance()).commit();
-
-			// Update Sync timer
-			new UpdateSyncSchedule().execute();
-		}
 	}
 
 	/**
@@ -73,6 +70,30 @@ public class ActivityArticlesList extends AppCompatActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	@Override
+	public void articleChosen(long entryId) {
+		Uri contentUri = ContentUris.withAppendedId(Provider.ARTICLE_URI, entryId);
+
+		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			FragmentChosenArticle chosenArticle = new FragmentChosenArticle();
+			Bundle bundle = new Bundle();
+			bundle.putParcelable(R.id.keyChosenArticleId + "", contentUri);
+			chosenArticle.setArguments(bundle);
+			getSupportFragmentManager()
+					.beginTransaction()
+					.replace(R.id.articleContainer, chosenArticle)
+					.addToBackStack(null)
+					.commit();
+		} else {
+			Intent intent = new Intent(this, ActivityChosenArticle.class);
+			intent.setData(contentUri);
+			startActivity(intent);
+		}
+	}
+
+	/**
+	 * Updates timer related information.
+	 */
 	private class UpdateSyncSchedule extends AsyncTask<Void, Void, Void> {
 
 		@Override

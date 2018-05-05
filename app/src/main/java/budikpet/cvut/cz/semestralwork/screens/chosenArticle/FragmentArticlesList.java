@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
+import android.net.sip.SipSession;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -36,6 +37,7 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 	private Context activityContext;
 	private MenuItem itemRefresh;
 	private View actionProgress;
+	private CallbacksListener listener;
 
 	private BroadcastReceiver syncStateReceiver = new BroadcastReceiver() {
 		@Override
@@ -94,12 +96,18 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 	public void onAttach(Context context) {
 		super.onAttach(context);
 		activityContext = context;
+		try {
+			listener = (CallbacksListener) context;
+		} catch (ClassCastException e) {
+			throw new ClassCastException(context.toString()+" must implement ListListener");
+		}
 	}
 
 	@Override
 	public void onDetach() {
 		super.onDetach();
 		activityContext = null;
+		listener = null;
 	}
 
 	//<editor-fold desc="Loader&View">
@@ -116,12 +124,8 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				Cursor cursor = (Cursor) adapter.getItem(position);
-				Uri contentUri = ContentUris.withAppendedId(Provider.ARTICLE_URI,
-						cursor.getLong(cursor.getColumnIndex(ArticleTable.ID)));
-
-				Intent intent = new Intent(activityContext, ActivityChosenArticle.class);
-				intent.setData(contentUri);
-				startActivity(intent);
+				long entryId = cursor.getLong(cursor.getColumnIndex(ArticleTable.ID));
+				listener.articleChosen(entryId);
 			}
 		});
 
@@ -187,6 +191,10 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.fragment_articles_list_menu, menu);
 		itemRefresh = menu.findItem(R.id.itemRefresh);
+	}
+
+	public interface CallbacksListener {
+		void articleChosen(long entryId);
 	}
 
 	/**

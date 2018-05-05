@@ -10,5 +10,15 @@
         android:id="@+id/fragment"
         android:name="budikpet.cvut.cz.semestralwork.screens.chosenArticle.FragmentArticlesList"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:layout_weight="4" />
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/articleContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="2">
+
+    </android.support.constraint.ConstraintLayout>
+
 </LinearLayout>
