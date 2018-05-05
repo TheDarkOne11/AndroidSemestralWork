@@ -34,6 +34,7 @@ import com.google.code.rome.android.repackaged.com.sun.syndication.io.SyndFeedIn
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.LinkedList;
 
 import budikpet.cvut.cz.semestralwork.R;
 import budikpet.cvut.cz.semestralwork.data.FeedReaderContentProvider;
@@ -208,12 +209,17 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 					throw new IndexOutOfBoundsException("Problem with cursor");
 				}
 
-				// Go through all URLs
+				LinkedList<String> urls = new LinkedList<>();
+
+				// Get all URLs from database
 				while (cursor.moveToNext()) {
-					String currUrl = cursor.getString(cursor.getColumnIndex(FeedTable.URL));
-					processFeed(currUrl);
+					urls.add(cursor.getString(cursor.getColumnIndex(FeedTable.URL)));
 				}
 
+				// Update entries
+				for(String curr : urls) {
+					processFeed(curr);
+				}
 				removeOldEntries();
 
 			} catch (IndexOutOfBoundsException | FeedException | IOException e) {
