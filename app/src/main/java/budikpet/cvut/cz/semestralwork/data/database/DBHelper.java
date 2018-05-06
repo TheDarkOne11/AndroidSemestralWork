@@ -1,11 +1,8 @@
-package budikpet.cvut.cz.semestralwork.data;
+package budikpet.cvut.cz.semestralwork.data.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-
-import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
-import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
 
 /**
  * Created by Petr on 14.04.18.

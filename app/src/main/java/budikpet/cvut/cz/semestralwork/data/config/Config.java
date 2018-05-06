@@ -7,7 +7,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.Serializable;
 
 /**
  * Default values of configuration.
@@ -19,16 +18,18 @@ public class Config {
 	private static long syncInterval = AlarmManager.INTERVAL_HOUR;
 	private static long lastSyncTime = System.currentTimeMillis();
 	private static long oldestEntryDays = 30;
+	private static boolean checkWifiEnabled = false;
 
 	public static void serializeConfig(Context context) {
 		// Open (or create) serialized config file
 		try(
 				DataOutputStream outputStream =
-						new DataOutputStream(context.openFileOutput(configFileName, Context.MODE_PRIVATE));
+						new DataOutputStream(context.openFileOutput(configFileName, Context.MODE_PRIVATE))
 		) {
 			outputStream.writeLong(syncInterval);
 			outputStream.writeLong(lastSyncTime);
 			outputStream.writeLong(oldestEntryDays);
+			outputStream.writeBoolean(checkWifiEnabled);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -40,11 +41,12 @@ public class Config {
 		// Open and deserialize config file
 		try(
 				DataInputStream inputStream =
-						new DataInputStream(context.openFileInput(configFileName));
+						new DataInputStream(context.openFileInput(configFileName))
 		) {
 			syncInterval = inputStream.readLong();
 			lastSyncTime = inputStream.readLong();
 			oldestEntryDays = inputStream.readLong();
+			checkWifiEnabled = inputStream.readBoolean();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 			serializeConfig(context);
@@ -68,5 +70,13 @@ public class Config {
 
 	public static long getOldestEntryDays() {
 		return oldestEntryDays;
+	}
+
+	public static boolean isCheckWifiEnabled() {
+		return checkWifiEnabled;
+	}
+
+	public static void setCheckWifiEnabled(boolean checkWifiEnabled) {
+		Config.checkWifiEnabled = checkWifiEnabled;
 	}
 }

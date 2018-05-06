@@ -9,7 +9,7 @@ import android.util.Log;
 
 import budikpet.cvut.cz.semestralwork.data.config.Config;
 
-public class ScheduleBroadcastReceiver extends BroadcastReceiver {
+public class SetAlarmBroadcastReceiver extends BroadcastReceiver {
 	public static String scheduleBroadcastFilter = "ScheduleBroadcastReceiverFilter";
 
 	@Override

@@ -21,8 +21,7 @@ import android.widget.Toast;
 
 import budikpet.cvut.cz.semestralwork.R;
 import budikpet.cvut.cz.semestralwork.data.Provider;
-import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
-import budikpet.cvut.cz.semestralwork.data.feeds.FeedsCursorAdapter;
+import budikpet.cvut.cz.semestralwork.data.database.FeedTable;
 import budikpet.cvut.cz.semestralwork.data.sync.SyncService;
 
 public class ActivityConfigureFeeds extends AppCompatActivity

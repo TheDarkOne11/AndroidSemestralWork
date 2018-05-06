@@ -11,8 +11,9 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
-import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
+import budikpet.cvut.cz.semestralwork.data.database.ArticleTable;
+import budikpet.cvut.cz.semestralwork.data.database.DBHelper;
+import budikpet.cvut.cz.semestralwork.data.database.FeedTable;
 
 public class Provider extends ContentProvider {
 	private DBHelper dbHelper;

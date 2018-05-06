@@ -24,7 +24,7 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import budikpet.cvut.cz.semestralwork.R;
-import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
+import budikpet.cvut.cz.semestralwork.data.database.ArticleTable;
 
 public class FragmentChosenArticle extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 	private final int LOADER_ID = 2;

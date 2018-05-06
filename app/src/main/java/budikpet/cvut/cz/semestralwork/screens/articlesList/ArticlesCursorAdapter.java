@@ -1,4 +1,4 @@
-package budikpet.cvut.cz.semestralwork.data.articles;
+package budikpet.cvut.cz.semestralwork.screens.articlesList;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -9,6 +9,7 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import budikpet.cvut.cz.semestralwork.R;
+import budikpet.cvut.cz.semestralwork.data.database.ArticleTable;
 
 /**
  * Cursor adapter working with ListView of articles.

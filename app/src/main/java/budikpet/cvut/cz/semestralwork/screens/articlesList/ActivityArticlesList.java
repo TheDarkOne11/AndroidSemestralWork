@@ -1,13 +1,9 @@
 package budikpet.cvut.cz.semestralwork.screens.articlesList;
 
-import android.content.ContentResolver;
 import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.Intent;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -15,15 +11,13 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import java.io.IOException;
-
 import budikpet.cvut.cz.semestralwork.R;
 import budikpet.cvut.cz.semestralwork.data.Provider;
 import budikpet.cvut.cz.semestralwork.data.config.Config;
-import budikpet.cvut.cz.semestralwork.data.sync.ScheduleBroadcastReceiver;
 import budikpet.cvut.cz.semestralwork.screens.chosenArticle.ActivityChosenArticle;
 import budikpet.cvut.cz.semestralwork.screens.chosenArticle.FragmentChosenArticle;
 import budikpet.cvut.cz.semestralwork.screens.configureFeeds.ActivityConfigureFeeds;
+import budikpet.cvut.cz.semestralwork.screens.preferences.ActivityPreferences;
 
 public class ActivityArticlesList extends AppCompatActivity implements FragmentArticlesList.CallbacksListener {
 	@Override
@@ -62,8 +56,8 @@ public class ActivityArticlesList extends AppCompatActivity implements FragmentA
 				startActivity(configureFeeds);
 				return true;
 			case R.id.itemPreferences:
-				// TODO Create functionality
-				Log.i("MENU", "Preferences clicked");
+				Intent preferences = new Intent(this, ActivityPreferences.class);
+				startActivity(preferences);
 				return true;
 			case R.id.itemAbout:
 				// TODO Create functionality

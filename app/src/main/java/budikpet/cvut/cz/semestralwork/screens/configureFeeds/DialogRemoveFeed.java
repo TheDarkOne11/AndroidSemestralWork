@@ -15,7 +15,7 @@ import android.widget.Toast;
 
 import budikpet.cvut.cz.semestralwork.R;
 import budikpet.cvut.cz.semestralwork.data.Provider;
-import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
+import budikpet.cvut.cz.semestralwork.data.database.ArticleTable;
 
 public class DialogRemoveFeed extends AppCompatDialogFragment {
 	private long feedId;

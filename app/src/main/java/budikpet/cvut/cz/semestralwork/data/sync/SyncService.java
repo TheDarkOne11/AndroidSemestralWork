@@ -4,8 +4,11 @@ import android.app.IntentService;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
@@ -24,9 +27,9 @@ import java.util.LinkedList;
 
 import budikpet.cvut.cz.semestralwork.R;
 import budikpet.cvut.cz.semestralwork.data.Provider;
-import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
+import budikpet.cvut.cz.semestralwork.data.database.ArticleTable;
 import budikpet.cvut.cz.semestralwork.data.config.Config;
-import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
+import budikpet.cvut.cz.semestralwork.data.database.FeedTable;
 
 public class SyncService extends IntentService {
 	/**
@@ -54,14 +57,6 @@ public class SyncService extends IntentService {
 		LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent);
 	}
 
-	private void scheduleNewAlarm() {
-		ContentResolver resolver = getContentResolver();
-		Config.newLastSyncTime();
-
-		// New alarm
-		sendBroadcast(new Intent(getApplicationContext(), ScheduleBroadcastReceiver.class));
-	}
-
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
@@ -70,6 +65,9 @@ public class SyncService extends IntentService {
 		}
 
 		// Check if connected
+		if(!connectionChecked()) {
+			return;
+		}
 
 		publishState(RUNNING, mainBroadcastFilter);
 
@@ -80,13 +78,33 @@ public class SyncService extends IntentService {
 		} else {
 			// Update all entries
 			updateEntries();
-			scheduleNewAlarm();
+			Config.newLastSyncTime();
+			sendBroadcast(new Intent(getApplicationContext(), SetAlarmBroadcastReceiver.class));
 		}
 
 		publishState(STOPPED, mainBroadcastFilter);
 
 		// TODO Testing only
 		//SystemClock.sleep(5000);
+	}
+
+	/**
+	 * Checks if it`s possible to synchronize feeds.
+	 * @return true if we can synchronize feeds.
+	 */
+	private boolean connectionChecked() {
+		boolean canConnect = false;
+
+		ConnectivityManager connManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo activeNetworkInfo = connManager.getActiveNetworkInfo();
+
+		// Check if device is connected to internet
+		if(activeNetworkInfo != null && activeNetworkInfo.isConnected()) {
+			// If device must use only wifi, check it
+			return !Config.isCheckWifiEnabled() || activeNetworkInfo.getType() == ConnectivityManager.TYPE_WIFI;
+		}
+
+		return false;
 	}
 
 	/**
