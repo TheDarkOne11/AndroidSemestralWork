@@ -20,19 +20,24 @@ import java.io.IOException;
 import budikpet.cvut.cz.semestralwork.R;
 import budikpet.cvut.cz.semestralwork.data.Provider;
 import budikpet.cvut.cz.semestralwork.data.config.Config;
-import budikpet.cvut.cz.semestralwork.data.config.ConfigTable;
 import budikpet.cvut.cz.semestralwork.data.sync.ScheduleBroadcastReceiver;
 import budikpet.cvut.cz.semestralwork.screens.chosenArticle.ActivityChosenArticle;
 import budikpet.cvut.cz.semestralwork.screens.chosenArticle.FragmentChosenArticle;
 import budikpet.cvut.cz.semestralwork.screens.configureFeeds.ActivityConfigureFeeds;
 
-public class ActivityArticlesList extends AppCompatActivity implements  FragmentArticlesList.CallbacksListener {
+public class ActivityArticlesList extends AppCompatActivity implements FragmentArticlesList.CallbacksListener {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_articles_list);
 
-		new UpdateSyncSchedule().execute();
+		Config.deserializeConfig(this);
+	}
+
+	@Override
+	protected void onPause() {
+		Config.serializeConfig(this);
+		super.onPause();
 	}
 
 	/**
@@ -73,7 +78,7 @@ public class ActivityArticlesList extends AppCompatActivity implements  Fragment
 	public void articleChosen(long entryId) {
 		Uri contentUri = ContentUris.withAppendedId(Provider.ARTICLE_URI, entryId);
 
-		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 			FragmentChosenArticle chosenArticle = new FragmentChosenArticle();
 			Bundle bundle = new Bundle();
 			bundle.putParcelable(R.id.keyChosenArticleId + "", contentUri);
@@ -87,47 +92,6 @@ public class ActivityArticlesList extends AppCompatActivity implements  Fragment
 			Intent intent = new Intent(this, ActivityChosenArticle.class);
 			intent.setData(contentUri);
 			startActivity(intent);
-		}
-	}
-
-	/**
-	 * Updates timer related information.
-	 */
-	private class UpdateSyncSchedule extends AsyncTask<Void, Void, Void> {
-
-		@Override
-		protected Void doInBackground(Void... voids) {
-			ContentResolver resolver = getContentResolver();
-			ContentValues cv = new ContentValues();
-
-			// Update local copies of config
-			String selection = ConfigTable.NAME + " == ?";
-			String[] selectionArgs = {ConfigTable.LAST_SYNC_TIME};
-			try (
-					Cursor cursorConfig = resolver.query(Provider.CONFIG_URI, null,
-							selection, selectionArgs, null)
-			) {
-				// Save or update lastSyncTime
-				if (cursorConfig != null && cursorConfig.getCount() > 0) {
-					// Update local copy of lastSyncTime
-					cursorConfig.moveToNext();
-					Config.lastSyncTime = cursorConfig.getLong(cursorConfig.getColumnIndex(ConfigTable.VALUE));
-				} else {
-					// Insert to db
-					cv.put(ConfigTable.VALUE, Config.lastSyncTime);
-					cv.put(ConfigTable.NAME, ConfigTable.LAST_SYNC_TIME);
-					Uri entryUri = resolver.insert(Provider.CONFIG_URI, cv);
-					if (entryUri == null) {
-						throw new IOException("Could not insert");
-					}
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-				Log.e("CONFIG", "Error occured: " + e.getMessage());
-			}
-
-			sendBroadcast(new Intent(getApplicationContext(), ScheduleBroadcastReceiver.class));
-			return null;
 		}
 	}
 

@@ -12,7 +12,6 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -92,7 +91,7 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 		try {
 			listener = (CallbacksListener) context;
 		} catch (ClassCastException e) {
-			throw new ClassCastException(context.toString()+" must implement ListListener");
+			throw new ClassCastException(context.toString() + " must implement ListListener");
 		}
 	}
 

@@ -12,7 +12,6 @@ import android.net.Uri;
 import android.text.TextUtils;
 
 import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
-import budikpet.cvut.cz.semestralwork.data.config.ConfigTable;
 import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
 
 public class Provider extends ContentProvider {
@@ -23,7 +22,6 @@ public class Provider extends ContentProvider {
 	// All defined URIs provided outside
 	public static final Uri ARTICLE_URI = Uri.parse("content://" + AUTHORITY + "/" + ArticleTable.BASE_PATH);
 	public static final Uri FEED_URI = Uri.parse("content://" + AUTHORITY + "/" + FeedTable.BASE_PATH);
-	public static final Uri CONFIG_URI = Uri.parse("content://" + AUTHORITY + "/" + ConfigTable.BASE_PATH);
 
 	// URI return codes
 	/**
@@ -43,9 +41,6 @@ public class Provider extends ContentProvider {
 	 */
 	private static final int FEED = 4;
 
-	private static final int CONFIG = 5;
-
-
 	private static final UriMatcher sURIMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
 	static {
@@ -53,7 +48,6 @@ public class Provider extends ContentProvider {
 		sURIMatcher.addURI(AUTHORITY, ArticleTable.BASE_PATH + "/#", ARTICLE);
 		sURIMatcher.addURI(AUTHORITY, FeedTable.BASE_PATH, FEED_LIST);
 		sURIMatcher.addURI(AUTHORITY, FeedTable.BASE_PATH + "/#", FEED);
-		sURIMatcher.addURI(AUTHORITY, ConfigTable.BASE_PATH, CONFIG);
 	}
 
 	SQLiteDatabase db;
@@ -83,9 +77,6 @@ public class Provider extends ContentProvider {
 				id = uri.getLastPathSegment();
 				rowsDeleted = sqlDB.delete(FeedTable.TABLE_NAME, FeedTable.ID + "=" + id, null);
 				break;
-			case CONFIG:
-				rowsDeleted = sqlDB.delete(ConfigTable.TABLE_NAME, selection, selectionArgs);
-				break;
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
@@ -109,9 +100,6 @@ public class Provider extends ContentProvider {
 				break;
 			case FEED_LIST:
 				id = sqlDB.insert(FeedTable.TABLE_NAME, null, values);
-				break;
-			case CONFIG:
-				id = sqlDB.insert(ConfigTable.TABLE_NAME, null, values);
 				break;
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);
@@ -161,10 +149,6 @@ public class Provider extends ContentProvider {
 						"(" + selection + ") AND " + idSelection;
 				break;
 			}
-			case CONFIG: {
-				table = ConfigTable.TABLE_NAME;
-				break;
-			}
 			default:
 				throw new IllegalArgumentException("Unknown URI: " + uri);
 		}
@@ -203,10 +187,6 @@ public class Provider extends ContentProvider {
 				String idSelection = FeedTable.ID + "=" + uri.getLastPathSegment();
 				selection = TextUtils.isEmpty(selection) ? idSelection :
 						"(" + selection + ") AND " + idSelection;
-				break;
-			}
-			case CONFIG: {
-				table = ConfigTable.TABLE_NAME;
 				break;
 			}
 			default:

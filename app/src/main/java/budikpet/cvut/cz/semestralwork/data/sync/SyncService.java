@@ -7,7 +7,6 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -27,7 +26,6 @@ import budikpet.cvut.cz.semestralwork.R;
 import budikpet.cvut.cz.semestralwork.data.Provider;
 import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
 import budikpet.cvut.cz.semestralwork.data.config.Config;
-import budikpet.cvut.cz.semestralwork.data.config.ConfigTable;
 import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
 
 public class SyncService extends IntentService {
@@ -58,32 +56,7 @@ public class SyncService extends IntentService {
 
 	private void scheduleNewAlarm() {
 		ContentResolver resolver = getContentResolver();
-
-		// Store new time to database
-		String selection = ConfigTable.NAME + " == ?";
-		String[] selectionArgs = {ConfigTable.LAST_SYNC_TIME};
-		try (
-				Cursor cursorConfig = resolver.query(Provider.CONFIG_URI, null,
-						selection, selectionArgs, null)
-		) {
-			// Update sync time
-			if (cursorConfig != null && cursorConfig.getCount() > 0) {
-				ContentValues cv = new ContentValues();
-				Config.lastSyncTime = System.currentTimeMillis() + Config.syncInterval;
-				cv.put(ConfigTable.VALUE, Config.lastSyncTime);
-
-				int updated = resolver.update(Provider.CONFIG_URI, cv, selection,
-						selectionArgs);
-				if (updated == 0) {
-					throw new IOException("Can't update");
-				}
-			} else {
-				throw new IOException("Config does not exist.");
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			Log.e("UPDATE_SCHEDULE", "Error occured: " + e.getMessage());
-		}
+		Config.newLastSyncTime();
 
 		// New alarm
 		sendBroadcast(new Intent(getApplicationContext(), ScheduleBroadcastReceiver.class));
@@ -95,6 +68,8 @@ public class SyncService extends IntentService {
 		if (intent == null) {
 			return;
 		}
+
+		// Check if connected
 
 		publishState(RUNNING, mainBroadcastFilter);
 
@@ -111,7 +86,7 @@ public class SyncService extends IntentService {
 		publishState(STOPPED, mainBroadcastFilter);
 
 		// TODO Testing only
-		SystemClock.sleep(5000);
+		//SystemClock.sleep(5000);
 	}
 
 	/**
@@ -229,7 +204,7 @@ public class SyncService extends IntentService {
 	 * @return time in millis. Entries older than this time should be deleted.
 	 */
 	private long getTime() {
-		return System.currentTimeMillis() - Config.oldestEntryDays * 24 * 60 * 60 * 1000;
+		return System.currentTimeMillis() - Config.getOldestEntryDays() * 24 * 60 * 60 * 1000;
 	}
 
 	/**

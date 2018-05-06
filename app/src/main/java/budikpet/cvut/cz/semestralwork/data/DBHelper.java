@@ -5,7 +5,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
-import budikpet.cvut.cz.semestralwork.data.config.ConfigTable;
 import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
 
 /**
@@ -30,13 +29,11 @@ public class DBHelper extends SQLiteOpenHelper {
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		ArticleTable.onUpgrade(db, oldVersion, newVersion);
 		FeedTable.onUpgrade(db, oldVersion, newVersion);
-		ConfigTable.onUpgrade(db, oldVersion, newVersion);
 	}
 
 	@Override
 	public void onDowngrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		ArticleTable.onDowngrade(db, oldVersion, newVersion);
 		FeedTable.onDowngrade(db, oldVersion, newVersion);
-		ConfigTable.onDowngrade(db, oldVersion, newVersion);
 	}
 }
