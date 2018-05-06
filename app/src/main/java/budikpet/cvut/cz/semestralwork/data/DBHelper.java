@@ -14,7 +14,7 @@ import budikpet.cvut.cz.semestralwork.data.feeds.FeedTable;
 
 public class DBHelper extends SQLiteOpenHelper {
 	private static final String DATABASE_NAME = "feedReader.db";
-	public static final int DATABASE_VERSION = 4;
+	public static final int DATABASE_VERSION = 2;
 
 	public DBHelper(Context context) {
 		super(context, DATABASE_NAME, null, DATABASE_VERSION);

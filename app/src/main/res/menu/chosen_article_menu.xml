@@ -5,6 +5,6 @@
         android:id="@+id/itemShareArticle"
         android:icon="?attr/actionModeShareDrawable"
         android:title="@string/itemShare"
-        app:showAsAction="always" />
+        app:showAsAction="always|withText" />
 
 </menu>

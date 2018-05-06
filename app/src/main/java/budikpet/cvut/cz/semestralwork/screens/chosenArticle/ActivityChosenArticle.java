@@ -8,10 +8,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import budikpet.cvut.cz.semestralwork.R;
-import budikpet.cvut.cz.semestralwork.screens.articlesList.FragmentChosenArticle;
 
 public class ActivityChosenArticle extends AppCompatActivity {
-	private int articleId;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -22,7 +20,7 @@ public class ActivityChosenArticle extends AppCompatActivity {
 		if (savedInstanceState == null) {
 			// Activity started for the first time
 			getSupportFragmentManager().beginTransaction()
-					.add(R.id.articleContainer, createArticleDetailFragment())
+					.replace(R.id.articleContainer, createArticleDetailFragment())
 					.commit();
 		}
 	}
@@ -31,19 +29,6 @@ public class ActivityChosenArticle extends AppCompatActivity {
 		Bundle args = new Bundle();
 		args.putParcelable(R.id.keyChosenArticleId + "", getIntent().getData());
 		return Fragment.instantiate(this, FragmentChosenArticle.class.getName(), args);
-	}
-
-	/**
-	 * Creates new menu with share button.
-	 *
-	 * @param menu
-	 * @return
-	 */
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.chosen_article_menu, menu);
-		return true;
 	}
 
 	@Override

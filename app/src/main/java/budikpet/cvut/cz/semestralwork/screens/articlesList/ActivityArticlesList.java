@@ -4,7 +4,6 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.Uri;
@@ -20,12 +19,11 @@ import java.io.IOException;
 
 import budikpet.cvut.cz.semestralwork.R;
 import budikpet.cvut.cz.semestralwork.data.Provider;
-import budikpet.cvut.cz.semestralwork.data.articles.ArticleTable;
 import budikpet.cvut.cz.semestralwork.data.config.Config;
 import budikpet.cvut.cz.semestralwork.data.config.ConfigTable;
 import budikpet.cvut.cz.semestralwork.data.sync.ScheduleBroadcastReceiver;
 import budikpet.cvut.cz.semestralwork.screens.chosenArticle.ActivityChosenArticle;
-import budikpet.cvut.cz.semestralwork.screens.chosenArticle.FragmentArticlesList;
+import budikpet.cvut.cz.semestralwork.screens.chosenArticle.FragmentChosenArticle;
 import budikpet.cvut.cz.semestralwork.screens.configureFeeds.ActivityConfigureFeeds;
 
 public class ActivityArticlesList extends AppCompatActivity implements  FragmentArticlesList.CallbacksListener {
@@ -34,6 +32,7 @@ public class ActivityArticlesList extends AppCompatActivity implements  Fragment
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_articles_list);
 
+		new UpdateSyncSchedule().execute();
 	}
 
 	/**

@@ -1,13 +1,10 @@
-package budikpet.cvut.cz.semestralwork.screens.chosenArticle;
+package budikpet.cvut.cz.semestralwork.screens.articlesList;
 
 import android.content.BroadcastReceiver;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
-import android.net.Uri;
-import android.net.sip.SipSession;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -15,6 +12,7 @@ import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,7 +34,6 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 	private ArticlesCursorAdapter adapter;
 	private Context activityContext;
 	private MenuItem itemRefresh;
-	private View actionProgress;
 	private CallbacksListener listener;
 
 	private BroadcastReceiver syncStateReceiver = new BroadcastReceiver() {
@@ -73,10 +70,6 @@ public class FragmentArticlesList extends Fragment implements LoaderCallbacks<Cu
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setHasOptionsMenu(true);
-
-		// Get progress bar view
-		actionProgress = LayoutInflater.from(getActivity()).inflate(R.layout.action_view_progress,
-				null);
 	}
 
 	@Override

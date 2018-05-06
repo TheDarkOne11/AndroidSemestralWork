@@ -1,4 +1,4 @@
-package budikpet.cvut.cz.semestralwork.screens.articlesList;
+package budikpet.cvut.cz.semestralwork.screens.chosenArticle;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +13,8 @@ import android.support.v4.content.Loader;
 import android.text.Html;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -170,6 +172,17 @@ public class FragmentChosenArticle extends Fragment implements LoaderManager.Loa
 	public void onDetach() {
 		super.onDetach();
 		activityContext = null;
+	}
+
+	/**
+	 * Creates new menu with share button.
+	 *
+	 * @param menu
+	 * @return
+	 */
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.chosen_article_menu, menu);
 	}
 
 	@Override

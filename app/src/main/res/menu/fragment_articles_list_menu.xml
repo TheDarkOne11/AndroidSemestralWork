@@ -6,5 +6,5 @@
         android:id="@+id/itemRefresh"
         android:icon="@drawable/ic_refresh_article_icon"
         android:title="@string/itemSync"
-        app:showAsAction="ifRoom|withText" />
+        app:showAsAction="always|withText" />
 </menu>
