@@ -81,7 +81,7 @@ public class DialogRemoveFeed extends AppCompatDialogFragment {
 		@Override
 		protected void onPostExecute(Void aVoid) {
 			super.onPostExecute(aVoid);
-			Toast.makeText(DialogRemoveFeed.this.getActivity(), R.string.DialogFeedDeleted, Toast.LENGTH_SHORT).show();
+//			Toast.makeText(DialogRemoveFeed.this.getActivity(), R.string.DialogFeedDeleted, Toast.LENGTH_SHORT).show();
 		}
 	}
 }
