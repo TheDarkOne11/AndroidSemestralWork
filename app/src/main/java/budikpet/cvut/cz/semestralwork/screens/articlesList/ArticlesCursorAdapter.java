@@ -2,6 +2,7 @@ package budikpet.cvut.cz.semestralwork.screens.articlesList;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,7 +62,7 @@ public class ArticlesCursorAdapter extends CursorAdapter {
 
 		// Use ViewHolders references to it's TextViews to give them new data of the current view.
 		holder.heading.setText(cursor.getString(holder.columnHeadingID));
-		holder.text.setText(cursor.getString(holder.columnTextID));
+		holder.text.setText(Html.fromHtml(cursor.getString(holder.columnTextID)));
 		view.setTag(R.id.keyChosenArticleId, cursor.getInt(holder.columnIdID));
 	}
 
