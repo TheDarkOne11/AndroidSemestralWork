@@ -19,6 +19,8 @@ public class SetAlarmBroadcastReceiver extends BroadcastReceiver {
 		AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 		Intent feedIntent = new Intent(context, SyncService.class);
 		PendingIntent pendingIntent = PendingIntent.getService(context, 0, feedIntent, 0);
+
+		// TODO Použít inexactRepeating, tím by odpadl problém s nastavováním
 		am.setExact(AlarmManager.RTC, Config.getLastSyncTime(), pendingIntent);
 	}
 }

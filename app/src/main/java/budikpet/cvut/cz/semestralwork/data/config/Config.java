@@ -11,6 +11,7 @@ import java.io.IOException;
 /**
  * Default values of configuration.
  * Most actual values are stored in database.
+ * TODO V Androidu existuje něco speciálně pro ukládání settings (jménem User preferences?)
  */
 public class Config {
 	// Synchronization config

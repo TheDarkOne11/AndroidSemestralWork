@@ -79,6 +79,8 @@ public class SyncService extends IntentService {
 			// Update all entries
 			updateEntries();
 			Config.newLastSyncTime();
+
+			// TODO Lepší mít statickou metodu pro zavolání alarmu.
 			sendBroadcast(new Intent(getApplicationContext(), SetAlarmBroadcastReceiver.class));
 		}
 
